@@ -794,41 +794,41 @@ function mulberry32(a) {
 
 // ── Demons (same as before, abbreviated) ───────────────────────
 const DEMONS = {
-  wrathful: { name: "Wrathful Shade", boss: false, lore: "Fire from below. Something feeds the rage.",
+  wrathful: { name: "The Burning", boss: false, lore: "Fire from below. Something feeds the rage.",
     greetings: ["You carry light. It burns.", "Another walker through fire.", "I was patient once."],
     responses: { confront: [{ t: "You meet its fury. Rage needs fear and finds none.", r: -8, ok: true }, { t: "You stand firm. Claws through conviction.", r: -10, ok: true }, { t: "You push. Neither yields.", r: -15, ok: false }], comprehend: [{ t: "Beneath: anguish calcified. It refuses to be seen.", r: -10, ok: false }, { t: "Love with nowhere to go. You see it.", r: -8, ok: true }], absolve: [{ t: "'Do not pity me.' Flames dim but hold.", r: -5, ok: false }, { t: "For one moment, a human shape. Gone.", r: -5, ok: true }], endure: [{ t: "Fury breaks on stone. The shade is spent.", r: -15, ok: true }, { t: "Deeper than expected. Resolve frays.", r: -18, ok: false }] } },
-  grieving: { name: "Grieving Remnant", boss: false, lore: "The child's soul was pulled down. Taken.",
+  grieving: { name: "The Weeping", boss: false, lore: "The child's soul was pulled down. Taken.",
     greetings: ["I was someone once.", "It's cold here.", "You look like someone I knew."],
     responses: { confront: [{ t: "Grief named can move.", r: -6, ok: true }, { t: "Wounded beyond what cutting reaches.", r: -8, ok: false }], comprehend: [{ t: "You listen. Understanding like warmth.", r: -4, ok: true }, { t: "The telling takes something heavy.", r: -5, ok: true }], absolve: [{ t: "'You would carry this?' Silence.", r: -3, ok: true }, { t: "'What is left of me?'", r: -5, ok: false }], endure: [{ t: "Sometimes presence is enough.", r: -10, ok: false }, { t: "'Thank you for staying.' It fades.", r: -12, ok: true }] } },
-  deceitful: { name: "Hollow Whisper", boss: false, lore: "A voice beneath. Something that promises and takes.",
+  deceitful: { name: "Two-Faced", boss: false, lore: "A voice beneath. Something that promises and takes.",
     greetings: ["I know what you want.", "Don't trust me.", "I can make it easier."],
     responses: { confront: [{ t: "Which lie? It shifts.", r: -10, ok: false }, { t: "You refuse its performance.", r: -8, ok: true }], comprehend: [{ t: "Root: terror, not malice.", r: -6, ok: true }, { t: "Beneath the last lie: small, frightened.", r: -5, ok: true }], absolve: [{ t: "'Forgive what?' Absolution slides off.", r: -5, ok: false }, { t: "You forgive what was done to it.", r: -4, ok: true }], endure: [{ t: "Beautiful lies. You hold none.", r: -14, ok: true }, { t: "By the seventh lie, uncertain.", r: -12, ok: false }] } },
-  prideful: { name: "Crowned Hollow", boss: false, lore: "It guarded something below. Failed. Crown is penance.",
+  prideful: { name: "The Crowned", boss: false, lore: "It guarded something below. Failed. Crown is penance.",
     greetings: ["Kneel or pass.", "How small.", "Since before mourning."],
     responses: { confront: [{ t: "An equal. The crown cracks.", r: -12, ok: true }, { t: "Born from challenge. Stronger.", r: -14, ok: false }], comprehend: [{ t: "Loneliness beneath grandeur.", r: -8, ok: true }, { t: "Crown is cage. Contempt.", r: -10, ok: false }], absolve: [{ t: "Permission to rest. Cracks.", r: -5, ok: true }, { t: "Mercy given downward.", r: -8, ok: false }], endure: [{ t: "Neither kneel nor challenge. Crown slips.", r: -18, ok: true }, { t: "Ages you cannot fathom.", r: -20, ok: false }] } },
-  forgotten: { name: "The Forgotten", boss: false, lore: "Not lost. Placed. A bookmark no one reads.",
+  forgotten: { name: "The Fading", boss: false, lore: "Not lost. Placed. A bookmark no one reads.",
     greetings: ["Can you see me?", "I had a name.", "Am I the demon?"],
     responses: { confront: [{ t: "'I see you.' Being seen.", r: -3, ok: true }, { t: "Clings to attention.", r: -6, ok: false }], comprehend: [{ t: "A name surfaces. It can forget.", r: -4, ok: true }, { t: "A child's laugh. Rain. A life?", r: -5, ok: true }], absolve: [{ t: "Nothing on purpose. It smiles.", r: -2, ok: true }, { t: "Mercy passes through.", r: -4, ok: false }], endure: [{ t: "Nothing. Always.", r: -8, ok: false }, { t: "Fragments. Then a pattern.", r: -10, ok: true }] } },
-  hollow: { name: "Empty Vessel", boss: false, lore: "Emptied by something that feeds. Below.",
+  hollow: { name: "The Hollow", boss: false, lore: "Emptied by something that feeds. Below.",
     greetings: ["...", "Should be something here.", "Contained multitudes once."],
     responses: { confront: [{ t: "Emptiness is still something.", r: -6, ok: true }, { t: "Force passes through.", r: -8, ok: false }], comprehend: [{ t: "Full of where things were.", r: -5, ok: true }, { t: "Nothing to understand.", r: -8, ok: false }], absolve: [{ t: "Light through cracks.", r: -3, ok: true }, { t: "Mercy drains.", r: -4, ok: false }], endure: [{ t: "Space held. Enough.", r: -10, ok: true }, { t: "Nothing to resist.", r: -14, ok: false }] } },
-  ancient: { name: "Elder Silence", boss: false, lore: "'Something woke below. Old. Hungry. It eats what souls are made of.'",
+  ancient: { name: "The Ancient", boss: false, lore: "'Something woke below. Old. Hungry. It eats what souls are made of.'",
     greetings: ["Youngest thing I've met.", "Watched the first soul.", "Without trembling. Interesting."],
     responses: { confront: [{ t: "You refuse diminishment. 'Hm.'", r: -15, ok: true }, { t: "'Brave. Futile.'", r: -18, ok: false }], comprehend: [{ t: "One thread. It shares.", r: -10, ok: true }, { t: "First sunrise. Too much.", r: -16, ok: false }], absolve: [{ t: "Cups your mercy like flame.", r: -6, ok: true }, { t: "Forgiving the ocean.", r: -10, ok: false }], endure: [{ t: "'Fine mountain.'", r: -20, ok: true }, { t: "Mayfly vs glacier.", r: -22, ok: false }] } },
   devourer: { name: "The Devourer", boss: true, lore: "Not evil. Starving. A hunger older than sin.",
     greetings: ["Finally. Substance.", "How long I have been empty.", "I cannot stop."],
     responses: { confront: [{ t: "The hunger is vast. But you have faced the vast before.", r: -20, ok: true }, { t: "Too large. It swallows conviction.", r: -25, ok: false }], comprehend: [{ t: "Not a monster. A wound. Something that should have healed.", r: -12, ok: true }, { t: "Measureless depth.", r: -18, ok: false }], absolve: [{ t: "'I forgive you for needing.' It weeps. Never been forgiven.", r: -8, ok: true }, { t: "How do you absolve hunger?", r: -12, ok: false }], endure: [{ t: "It feeds. You let it. You have more than it expects.", r: -28, ok: true }, { t: "Not infinite.", r: -30, ok: false }] } },
   // ── Area 2 Demons ──
-  ashenwalker: { name: "Ashen Walker", boss: false, lore: "It walks the same path. Forever. The fire took everything but the walking.",
+  ashenwalker: { name: "The Endless Walk", boss: false, lore: "It walks the same path. Forever. The fire took everything but the walking.",
     greetings: ["Step. Step. Step.", "The path is all.", "I remember burning."],
     responses: { confront: [{ t: "You block the path. It walks through you.", r: -14, ok: false }, { t: "You walk beside it. Together for a time.", r: -10, ok: true }], comprehend: [{ t: "The fire. A village. Children singing before.", r: -8, ok: true }, { t: "Ash and ash and ash.", r: -12, ok: false }], absolve: [{ t: "The walking slows. 'Where am I going?'", r: -6, ok: true }, { t: "It cannot stop. Forgiveness slides past.", r: -10, ok: false }], endure: [{ t: "You match its pace. Mile after mile. It tires.", r: -16, ok: true }, { t: "It never tires. You do.", r: -20, ok: false }] } },
-  bound: { name: "The Bound One", boss: false, lore: "Chained not by others but by itself. The guilt is the lock.",
+  bound: { name: "The Chained", boss: false, lore: "Chained not by others but by itself. The guilt is the lock.",
     greetings: ["Don't look.", "I deserve this.", "These chains are mine."],
     responses: { confront: [{ t: "The chains are rusted open. It holds them closed.", r: -10, ok: true }, { t: "It wraps tighter. Confront feeds guilt.", r: -16, ok: false }], comprehend: [{ t: "'I hurt someone. Long ago.' Understanding cracks a link.", r: -8, ok: true }, { t: "The guilt has become its skeleton. Remove it and nothing stands.", r: -14, ok: false }], absolve: [{ t: "A chain falls. Then another. 'Who gave you the right?' You. 'Oh.'", r: -5, ok: true }, { t: "It rejects mercy violently.", r: -12, ok: false }], endure: [{ t: "You sit beside the chains and wait. Eventually, it stops pulling.", r: -18, ok: true }, { t: "Guilt doesn't tire. You do.", r: -22, ok: false }] } },
-  rootspeaker: { name: "Root Speaker", boss: false, lore: "The roots remember what the trees forgot. Something fed them lies.",
+  rootspeaker: { name: "Voice of Roots", boss: false, lore: "The roots remember what the trees forgot. Something fed them lies.",
     greetings: ["The roots know.", "Listen to the ground.", "It speaks through me."],
     responses: { confront: [{ t: "Roots don't fight. They grow around you.", r: -12, ok: false }, { t: "You tear through. Truth in the heartwood.", r: -14, ok: true }], comprehend: [{ t: "Not words — vibrations. You learn to feel them.", r: -6, ok: true }, { t: "The language is older than speech. You drown.", r: -16, ok: false }], absolve: [{ t: "The roots loosen their grip on old bones.", r: -4, ok: true }, { t: "They don't want mercy. They want to be heard.", r: -8, ok: false }], endure: [{ t: "The vibrations pass through you. You become a tuning fork.", r: -20, ok: true }, { t: "Patience doesn't work on something eternal.", r: -24, ok: false }] } },
-  ashmother: { name: "The Ash Mother", boss: false, lore: "She fed the fire to save them. They burned anyway. Now she feeds everything.",
+  ashmother: { name: "Mother of Ash", boss: false, lore: "She fed the fire to save them. They burned anyway. Now she feeds everything.",
     greetings: ["Are you hungry?", "Let me carry that.", "Everyone leaves."],
     responses: { confront: [{ t: "'You don't need to carry this.' She drops something heavy.", r: -8, ok: true }, { t: "She absorbs confrontation like fuel.", r: -14, ok: false }], comprehend: [{ t: "Love so large it crushed what it held. You see.", r: -6, ok: true }, { t: "The depth of it pulls you under.", r: -12, ok: false }], absolve: [{ t: "'You did enough.' She weeps ash. Lighter.", r: -3, ok: true }, { t: "She doesn't believe she deserves it.", r: -8, ok: false }], endure: [{ t: "You let her hold you. She needed to hold something alive.", r: -15, ok: true }, { t: "Mothering becomes consuming.", r: -20, ok: false }] } },
 };
@@ -857,30 +857,29 @@ const INSCRIPTIONS = [
 ];
 
 const KEEPER = [
-  { c: s => s.t === 0, text: "You're awake. That's rare. Most souls wander. You woke up. That makes you a Searcher. Your grave is your anchor. Without it, you'd drift." },
-  { c: s => s.t === 1, text: "The lost souls don't know they're dead. Guide them to a shrine. But the demons — they know what they are. And they carry truth in their pain." },
-  { c: s => s.t === 2, text: "Something is wrong. Souls aren't just lost. They're held. Pulled down. Face the demons. Listen. There's truth hidden in their anguish." },
-  { c: s => s.t === 3 && s.g === 0, text: "You carry souls but haven't guided any yet. Find a shrine — tall stone monuments. The souls need rest, and you need resolve." },
-  { c: s => s.t >= 3 && s.l === 0, text: "You haven't faced a demon yet, or they held against you. Seek them out. Each one carries a fragment of truth." },
-  { c: s => s.t >= 3 && s.l < 4, text: "Each demon carries a fragment. I can feel it growing stronger below. Keep searching." },
-  { c: s => s.l >= 4 && s.l < 7, text: "The pieces connect. Something old feeds beneath. Something that eats what souls are made of. Three more fragments." },
-  { c: s => s.l >= 7 && s.a === 1, text: "You've heard enough. The gate leads to the Ashen Forest. The roots go deeper. Find it — I believe it's to the southeast." },
-  { c: s => s.a === 2 && s.b === 0, text: "The Ashen Forest. The demons here are different — bound by their own pain. And somewhere, deep in the north... the Devourer waits." },
-  { c: s => s.a === 2 && s.b > 0, text: "You've done it. The Devourer is sated — for now. What you've learned changes things. Rest. You've earned it." },
+  { c: s => s.t === 0, text: "You're awake. That's rare. I'm the Keeper. Walk around with the D-pad. When you see a glowing soul, walk close and press Confirm to collect it. Then bring it to a shrine — the tall stone monument to my left." },
+  { c: s => s.t === 1, text: "Good. Souls need shrines. And you need resolve — the shrine restores it. But the demons in these meadows carry fragments of truth. Walk near one and press Confirm to face it. Choose your approach wisely." },
+  { c: s => s.t === 2, text: "Each demon type carries one truth. Defeat seven different types to open the gate. If you're hurt, collect souls and deliver them to shrines — that restores your resolve. Press J to check your progress." },
+  { c: s => s.t === 3 && s.g === 0, text: "You're carrying souls. See that stone monument nearby? Walk next to it and press Confirm to guide them to rest. You'll need the resolve it gives you." },
+  { c: s => s.t >= 3 && s.l === 0, text: "You haven't defeated a demon yet. Find one in the meadow — they look different from souls and trees. Walk near and press Confirm. Choose an approach: each has different risks." },
+  { c: s => s.t >= 3 && s.l < 4, text: `You have ${s.l} fragments of truth. You need 7 to open the gate. Each type of demon gives one fragment the first time you defeat it. Explore further from home to find stronger, rarer demons.` },
+  { c: s => s.l >= 4 && s.l < 7, text: `${s.l} of 7 truths found. ${7 - s.l} more to go. The rarer demons — The Ancient, The Crowned, The Hollow — appear in rooms further from your grave. Venture out.` },
+  { c: s => s.l >= 7 && s.a === 1, text: "All 7 truths gathered. The gate is open! Head southeast to room (2,2). Walk to the archway and press Confirm to enter the Ashen Forest. Prepare yourself." },
+  { c: s => s.a === 2 && s.b === 0, text: "The Ashen Forest. New demons roam here. The Devourer — the source of all this — waits far to the north at room (0,-3). Gather your courage. Deliver souls to shrines along the way." },
+  { c: s => s.a === 2 && s.b > 0, text: "You've done it. The Devourer is sated. You understood what others couldn't. The world is lighter. You may keep exploring — there are always more souls to guide. Rest. You've earned it." },
 ];
 
 // ── Quest Milestones ──────────────────────────────────────────
 const MILESTONES = [
-  { id: "wake",     label: "Awaken at your grave",         check: s => s.gs !== "intro" },
-  { id: "keeper",   label: "Speak with the Keeper",        check: s => s.keeperT > 0 },
-  { id: "soul",     label: "Collect a lost soul",          check: s => s.guided > 0 || s.held > 0 },
-  { id: "guide",    label: "Guide a soul to a shrine",     check: s => s.guided > 0 },
-  { id: "lore1",    label: "Learn your first truth",       check: s => s.loreN >= 1 },
-  { id: "lore3",    label: "Gather 3 fragments of truth",  check: s => s.loreN >= 3 },
-  { id: "lore5",    label: "Gather 5 fragments of truth",  check: s => s.loreN >= 5 },
-  { id: "lore7",    label: "Gather 7 fragments — open the gate", check: s => s.loreN >= 7 },
-  { id: "area2",    label: "Enter the Ashen Forest",       check: s => s.area >= 2 },
-  { id: "boss",     label: "Face the Devourer",            check: s => s.bossTrophies.length > 0 },
+  { id: "wake",     label: "Wake up",                                    check: s => s.gs !== "intro" },
+  { id: "keeper",   label: "Talk to the Keeper (next to your grave)",    check: s => s.keeperT > 0 },
+  { id: "soul",     label: "Pick up a soul (walk near, press Confirm)",  check: s => s.guided > 0 || s.held > 0 },
+  { id: "guide",    label: "Deliver a soul to a shrine",                 check: s => s.guided > 0 },
+  { id: "lore1",    label: "Defeat a demon to learn a truth (1/7)",      check: s => s.loreN >= 1 },
+  { id: "lore3",    label: "Defeat 3 different demon types (3/7)",       check: s => s.loreN >= 3 },
+  { id: "lore7",    label: "Defeat all 7 types to open the gate (7/7)",  check: s => s.loreN >= 7 },
+  { id: "area2",    label: "Enter the gate to the Ashen Forest",         check: s => s.area >= 2 },
+  { id: "boss",     label: "Find and defeat the Devourer",               check: s => s.bossTrophies.length > 0 },
 ];
 
 const TOTAL_LORE = 10;
@@ -989,18 +988,19 @@ function SoulSearcher() {
     }
   }, [resolve, gs]);
 
-  // Current objective for HUD display
+  // Current objective for HUD display — always tell the player exactly what to do
   const getObjective = useCallback(() => {
-    if (keeperT === 0) return "Speak with the Keeper.";
-    if (guided === 0 && held === 0) return "Find a lost soul.";
-    if (guided === 0 && held > 0) return "Guide souls to a shrine.";
-    if (loreN < 1) return "Face a demon. Learn truth.";
-    if (loreN < 7) return `Gather truth. (${loreN}/7 fragments)`;
-    if (area === 1 && gateOpen) return "Find the gate. (Southeast)";
-    if (area === 1 && !gateOpen) return "The gate should open soon...";
-    if (area === 2 && bossTrophies.length === 0) return "Find the Devourer. (Far north)";
-    return "The journey continues.";
-  }, [keeperT, guided, held, loreN, area, gateOpen, bossTrophies]);
+    if (keeperT === 0) return "> Talk to the Keeper (walk near, press Confirm)";
+    if (guided === 0 && held === 0) return "> Find a glowing soul and press Confirm near it";
+    if (guided === 0 && held > 0) return `> Bring ${held} soul${held > 1 ? "s" : ""} to a shrine (tall stone monument)`;
+    if (loreN < 1) return "> Walk near a demon and press Confirm to face it";
+    if (loreN < 7) return `> Defeat different demons for truth (${loreN}/7 found)`;
+    if (area === 1 && gateOpen) return "> The gate is open! Find it southeast at (2,2)";
+    if (area === 1 && !gateOpen) return "> The gate should be opening...";
+    if (area === 2 && bossTrophies.length === 0) return "> Find the Devourer — far north at (0,-3)";
+    if (victory) return "> Free to explore. Visit the Keeper.";
+    return "> Keep exploring.";
+  }, [keeperT, guided, held, loreN, area, gateOpen, bossTrophies, victory]);
 
   const getW = useCallback(() => { const a = WHISPERS.filter((_, i) => !usedW.has(i)); if (!a.length) { setUsedW(new Set()); return pick(WHISPERS); } const idx = WHISPERS.indexOf(pick(a)); setUsedW(s => new Set([...s, idx])); return WHISPERS[idx]; }, [usedW]);
 
@@ -1115,20 +1115,19 @@ function SoulSearcher() {
   }, []);
 
   // ── Draw ink blot (resolve indicator) ──────────────────────
-  // damage: 0 (full health) to 100 (dead). Center of blot at (cx, cy).
-  // The blot is a small dot when healthy, expands asymmetrically as damage grows.
-  const drawInkBlot = useCallback((ctx, cx, cy, damage, maxRadius) => {
+  // Spreads horizontally across the width. At full health it's a tiny dot.
+  // As damage increases it bleeds outward as a wide, flat ink stain.
+  const drawInkBlot = useCallback((ctx, cx, cy, damage, maxW, maxH) => {
     if (damage <= 0) {
-      // Tiny seed dot at full health — pixel perfect
       ctx.fillStyle = BLK;
       fillCircle(ctx, cx, cy, 2);
       return;
     }
 
-    const t = Math.min(damage, 100) / 100; // 0..1 normalized damage
-    const baseR = 2 + t * (maxRadius - 2); // radius grows with damage
+    const t = Math.min(damage, 100) / 100;
+    const baseW = 2 + t * (maxW - 2); // horizontal spread
+    const baseH = 2 + t * (maxH - 2); // vertical spread (much smaller)
 
-    // Deterministic pseudo-random for consistent asymmetric shape
     const prng = (i) => {
       let x = Math.sin(i * 127.1 + 311.7) * 43758.5453;
       return x - Math.floor(x);
@@ -1136,64 +1135,50 @@ function SoulSearcher() {
 
     ctx.fillStyle = BLK;
 
-    // Draw multiple overlapping ellipses for organic ink-blot shape (pixel-perfect)
-    const lobeCount = 12;
+    // Main body: wide horizontal ellipses with asymmetric offsets
+    const lobeCount = 10;
     for (let i = 0; i < lobeCount; i++) {
-      const angle = (i / lobeCount) * Math.PI * 2 + prng(i + 1) * 0.5;
-      const stretch = 0.5 + prng(i + 10) * 1.0;
-      const width = 0.4 + prng(i + 20) * 0.6;
-      const lobeR = baseR * stretch;
-      const lobeW = baseR * width * 0.6;
+      const angle = (i / lobeCount) * Math.PI * 2 + prng(i + 1) * 0.4;
+      // Bias stretch toward horizontal
+      const hStretch = 0.4 + prng(i + 10) * 0.8;
+      const vStretch = 0.2 + prng(i + 15) * 0.5;
+      const lobeW = baseW * hStretch;
+      const lobeH = baseH * vStretch;
+      const offX = (prng(i + 30) - 0.5) * baseW * 0.25;
+      const offY = (prng(i + 40) - 0.5) * baseH * 0.2;
 
-      // Offset center slightly for asymmetry
-      const offX = (prng(i + 30) - 0.5) * baseR * 0.3;
-      const offY = (prng(i + 40) - 0.5) * baseR * 0.2;
-
-      // Rotated ellipse via pixel scan
-      const cosA = Math.cos(angle), sinA = Math.sin(angle);
-      const scanR = Math.ceil(Math.max(lobeR, lobeW) + Math.abs(lobeR * 0.3));
-      for (let dy = -scanR; dy <= scanR; dy++) {
-        for (let dx = -scanR; dx <= scanR; dx++) {
-          // Rotate back to ellipse space
-          const lx = dx * cosA + dy * sinA;
-          const ly = -dx * sinA + dy * cosA - lobeR * 0.3;
-          if (lobeW > 0 && lobeR > 0 && (lx * lx) / (lobeW * lobeW) + (ly * ly) / (lobeR * lobeR) <= 1) {
-            ctx.fillRect(Math.floor(cx + offX + dx), Math.floor(cy + offY + dy), 1, 1);
-          }
-        }
-      }
+      fillEllipse(ctx, cx + offX + Math.cos(angle) * lobeW * 0.2,
+                       cy + offY + Math.sin(angle) * lobeH * 0.15,
+                       lobeW, lobeH);
     }
 
-    // Core blob to ensure solid center
-    fillCircle(ctx, cx, cy, baseR * 0.55);
+    // Core ellipse
+    fillEllipse(ctx, cx, cy, baseW * 0.4, baseH * 0.45);
 
-    // Satellite droplets that appear at higher damage
+    // Satellite droplets — spread horizontally
     if (t > 0.3) {
-      const dropCount = Math.floor((t - 0.3) * 20);
+      const dropCount = Math.floor((t - 0.3) * 16);
       for (let i = 0; i < dropCount; i++) {
         const angle = prng(i + 100) * Math.PI * 2;
-        const dist = baseR * (0.8 + prng(i + 110) * 0.6);
-        const r = 1 + prng(i + 120) * (t * 4);
-        const dx = cx + Math.cos(angle) * dist;
-        const dy = cy + Math.sin(angle) * dist;
-        fillCircle(ctx, dx, dy, r);
+        const distX = baseW * (0.6 + prng(i + 110) * 0.5);
+        const distY = baseH * (0.3 + prng(i + 115) * 0.4);
+        const r = 1 + prng(i + 120) * (t * 3);
+        fillCircle(ctx, cx + Math.cos(angle) * distX,
+                        cy + Math.sin(angle) * distY, r);
       }
     }
 
-    // Fine tendrils at high damage
-    if (t > 0.5) {
-      const tendrilCount = Math.floor((t - 0.5) * 16);
+    // Horizontal tendrils at high damage — like ink bleeding along paper fibers
+    if (t > 0.4) {
+      const tendrilCount = Math.floor((t - 0.4) * 12);
       for (let i = 0; i < tendrilCount; i++) {
-        const angle = prng(i + 200) * Math.PI * 2;
-        const len = baseR * (0.6 + prng(i + 210) * 0.8);
-        ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate(angle);
-        ctx.fillRect(-0.5, 0, 1 + t, len);
-        ctx.restore();
+        const side = prng(i + 200) < 0.5 ? -1 : 1;
+        const len = baseW * (0.4 + prng(i + 210) * 0.6);
+        const yOff = (prng(i + 220) - 0.5) * baseH * 0.6;
+        ctx.fillRect(Math.floor(cx), Math.floor(cy + yOff), Math.floor(side * len), 1 + Math.floor(t));
       }
     }
-  }, [fillCircle]);
+  }, [fillCircle, fillEllipse]);
 
   // ── Render ─────────────────────────────────────────────────
   const render = useCallback(() => {
@@ -1278,7 +1263,7 @@ function SoulSearcher() {
       ctx.textAlign = "center"; ctx.font = "bold 13px 'Courier New',monospace";
       ctx.fillText("Resolve", W / 2, 358);
       const homeDamage = 100 - resolve;
-      drawInkBlot(ctx, W / 2, 400, homeDamage, 36);
+      drawInkBlot(ctx, W / 2, 400, homeDamage, 80, 30);
       ctx.fillStyle = BLK;
 
       // Boss trophies
@@ -1512,17 +1497,16 @@ function SoulSearcher() {
       ml.slice(0, 2).forEach((l, i) => ctx.fillText(l, 16, MSG_Y + 14 + i * 16));
 
       // ── Ink Blot (Resolve indicator) ──
-      // Drawn at bottom 1/3 of screen, centered horizontally
-      const blotCY = H * 2 / 3 + (H / 3) / 2; // center of bottom third
+      // Wide horizontal spread between message area and controls bar
+      const blotCY = H - 60; // between message and controls
       const damage = 100 - resolve;
-      const blotMaxR = H / 3 * 0.45; // max radius fits within bottom third
-      drawInkBlot(ctx, W / 2, blotCY, damage, blotMaxR);
+      drawInkBlot(ctx, W / 2, blotCY, damage, W * 0.4, 28);
       ctx.fillStyle = BLK;
 
       // ── Controls ──
       ctx.fillRect(0, H - 22, W, 1);
       ctx.font = "12px 'Courier New',monospace"; ctx.textAlign = "center";
-      ctx.fillText("D-Pad Move   Confirm Act   J Journal   Menu Home", W / 2, H - 6);
+      ctx.fillText("Move: D-Pad   Act: Confirm   J: Progress   Menu: Home", W / 2, H - 6);
       ctx.textAlign = "left";
     }
 
@@ -1588,9 +1572,9 @@ function SoulSearcher() {
 
       // Ink blot resolve indicator
       ctx.fillStyle = BLK;
-      const encBlotCY = H * 2 / 3 + (H / 3) / 2;
+      const encBlotCY = H - 50;
       const encDamage = 100 - resolve;
-      drawInkBlot(ctx, W / 2, encBlotCY, encDamage, H / 3 * 0.4);
+      drawInkBlot(ctx, W / 2, encBlotCY, encDamage, W * 0.35, 22);
       ctx.fillStyle = BLK;
 
       ctx.textAlign = "center"; ctx.font = "12px 'Courier New',monospace";
@@ -1658,7 +1642,7 @@ function SoulSearcher() {
       ctx.fillStyle = BLK; ctx.fillRect(0, 0, W, H); ctx.fillStyle = WHT;
       // Full-screen ink blot effect
       ctx.fillStyle = WHT;
-      drawInkBlot(ctx, W / 2, H / 2, 100, 200);
+      drawInkBlot(ctx, W / 2, H / 2, 100, W * 0.45, H * 0.35);
       ctx.fillStyle = WHT;
       ctx.font = "bold 28px 'Courier New',monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       ctx.fillText("Your resolve", W / 2, H / 2 - 60);
