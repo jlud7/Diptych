@@ -478,6 +478,115 @@ def("gate", [
   "111111110000000011111110",
 ]);
 
+// Area 2 demon sprites
+def("ashenwalker", [
+  "000000000011100000000000",
+  "000000000111110000000000",
+  "000000001111111000000000",
+  "000000001100011000000000",
+  "000000001111111000000000",
+  "000000000111110000000000",
+  "000000000011100000000000",
+  "000000000111110000000000",
+  "000000001111111000000000",
+  "000000011111111100000000",
+  "000000111111111110000000",
+  "000001111111111111000000",
+  "000001111111111111000000",
+  "000000111111111110000000",
+  "000000011111111100000000",
+  "000000001111111000000000",
+  "000000001100011000000000",
+  "000000011100011100000000",
+  "000000111000001110000000",
+  "000001110000000111000000",
+  "100011100000000011100010",
+  "110111000000000001110110",
+  "011110000000000000111100",
+  "001100000000000000011000",
+]);
+
+def("bound", [
+  "000110000000000001100000",
+  "001001000011100010010000",
+  "010000100111110100001000",
+  "010000011111111000001000",
+  "001000111111111110010000",
+  "000101111100111111010000",
+  "000011111000011111100000",
+  "000001111000001111000000",
+  "001000111100011100001000",
+  "010100011111111000101000",
+  "010010001111110010010000",
+  "001001001111110100100000",
+  "000100101111101010000000",
+  "000010011111110100000000",
+  "000001001111101000000000",
+  "000000101111010100000000",
+  "000000011111111000000000",
+  "000000001111110000000000",
+  "000000001100110000000000",
+  "000000011000011000000000",
+  "000000110000001100000000",
+  "000001100000000110000000",
+  "000011000000000011000000",
+  "000110000000000001100000",
+]);
+
+def("rootspeaker", [
+  "000000000011100000000000",
+  "000000001111111000000000",
+  "000000011100011100000000",
+  "000000011010101100000000",
+  "000000011100011100000000",
+  "000000001111111000000000",
+  "000100000111110000010000",
+  "001110001111111000111000",
+  "011111011111111101111100",
+  "001111111111111111111000",
+  "000111111111111111110000",
+  "000011111111111111100000",
+  "000001111111111111000000",
+  "000000111111111110000000",
+  "000001111101011111000000",
+  "000011110000000111100000",
+  "000111100000000011110000",
+  "001111000000000001111000",
+  "011110000000000000111100",
+  "111100000000000000011110",
+  "111000000000000000001110",
+  "110000000000000000000110",
+  "100000000000000000000010",
+  "100000000000000000000010",
+]);
+
+def("ashmother", [
+  "000000000111110000000000",
+  "000000001111111000000000",
+  "000000011111111100000000",
+  "000000011001001100000000",
+  "000000011111111100000000",
+  "000000001111111000000000",
+  "000000000111110000000000",
+  "000000001111111000000000",
+  "000000011111111100000000",
+  "000001111111111111000000",
+  "000011111111111111100000",
+  "000111111111111111110000",
+  "001111111111111111111000",
+  "011111111111111111111100",
+  "011111111111111111111100",
+  "001111111111111111111000",
+  "000111111111111111110000",
+  "000011111111111111100000",
+  "000001111111111111000000",
+  "000000111111111110000000",
+  "000001111100011111000000",
+  "000011110000000111100000",
+  "000111100000000011110000",
+  "001111000000000001111000",
+]);
+
 // ── Room-based world ───────────────────────────────────────────
 // World is a grid of rooms. Each room is ROOM_COLS x ROOM_ROWS tiles.
 // Player pos is local to current room.
@@ -487,28 +596,77 @@ function generateRoom(rx, ry, area, seed) {
   const tiles = Array.from({ length: ROOM_ROWS }, () => Array(ROOM_COLS).fill(0));
   const entities = [];
   const used = new Set();
+  const dist = Math.abs(rx) + Math.abs(ry);
 
   const treeType = area === 1 ? 1 : 4;
-  const treeCount = area === 1 ? 12 + Math.floor(rng() * 10) : 6 + Math.floor(rng() * 8);
 
-  // Trees
-  for (let i = 0; i < treeCount; i++) {
-    const x = Math.floor(rng() * ROOM_COLS);
-    const y = Math.floor(rng() * ROOM_ROWS);
-    if (x > 1 && y > 1 && x < ROOM_COLS - 2 && y < ROOM_ROWS - 2) tiles[y][x] = treeType;
+  // Room layout variety based on deterministic hash
+  const roomType = Math.floor(rng() * 10); // 0-9
+
+  if (roomType <= 3) {
+    // Scattered trees (default)
+    const treeCount = area === 1 ? 10 + Math.floor(rng() * 8) : 5 + Math.floor(rng() * 6);
+    for (let i = 0; i < treeCount; i++) {
+      const x = Math.floor(rng() * ROOM_COLS);
+      const y = Math.floor(rng() * ROOM_ROWS);
+      if (x > 1 && y > 1 && x < ROOM_COLS - 2 && y < ROOM_ROWS - 2) tiles[y][x] = treeType;
+    }
+  } else if (roomType <= 5) {
+    // Clearing with ring of trees around edge
+    for (let i = 0; i < 24; i++) {
+      const angle = (i / 24) * Math.PI * 2;
+      const r = 6 + rng() * 2;
+      const x = Math.floor(ROOM_COLS / 2 + Math.cos(angle) * r);
+      const y = Math.floor(ROOM_ROWS / 2 + Math.sin(angle) * r);
+      if (x > 1 && y > 1 && x < ROOM_COLS - 2 && y < ROOM_ROWS - 2) tiles[y][x] = treeType;
+    }
+  } else if (roomType <= 7) {
+    // Path/corridor through dense trees
+    const horizontal = rng() < 0.5;
+    const pathY = 3 + Math.floor(rng() * (ROOM_ROWS - 6));
+    const pathX = 3 + Math.floor(rng() * (ROOM_COLS - 6));
+    const treeCount = 18 + Math.floor(rng() * 8);
+    for (let i = 0; i < treeCount; i++) {
+      const x = Math.floor(rng() * ROOM_COLS);
+      const y = Math.floor(rng() * ROOM_ROWS);
+      if (x > 1 && y > 1 && x < ROOM_COLS - 2 && y < ROOM_ROWS - 2) {
+        const onPath = horizontal ? Math.abs(y - pathY) <= 1 : Math.abs(x - pathX) <= 1;
+        if (!onPath) tiles[y][x] = treeType;
+      }
+    }
+  } else {
+    // Dense grove with small clearings
+    for (let y = 2; y < ROOM_ROWS - 2; y++) {
+      for (let x = 2; x < ROOM_COLS - 2; x++) {
+        if (rng() < 0.35) tiles[y][x] = treeType;
+      }
+    }
+    // Punch out 1-2 clearings
+    const clearings = 1 + Math.floor(rng() * 2);
+    for (let c = 0; c < clearings; c++) {
+      const cx = 4 + Math.floor(rng() * (ROOM_COLS - 8));
+      const cy = 4 + Math.floor(rng() * (ROOM_ROWS - 8));
+      for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
+        if (dx * dx + dy * dy <= 5 && cy + dy > 0 && cy + dy < ROOM_ROWS - 1 && cx + dx > 0 && cx + dx < ROOM_COLS - 1)
+          tiles[cy + dy][cx + dx] = 0;
+      }
+    }
   }
+
   // Rocks
-  for (let i = 0; i < 3 + Math.floor(rng() * 4); i++) {
+  for (let i = 0; i < 2 + Math.floor(rng() * 4); i++) {
     const x = Math.floor(rng() * ROOM_COLS);
     const y = Math.floor(rng() * ROOM_ROWS);
-    if (tiles[y]?.[x] === 0 && x > 0 && y > 0) tiles[y][x] = 3;
+    if (tiles[y]?.[x] === 0 && x > 1 && y > 1 && x < ROOM_COLS - 2 && y < ROOM_ROWS - 2) tiles[y][x] = 3;
   }
-  // Water (in some rooms)
-  if (rng() < 0.3) {
+
+  // Water (in some rooms, more common in area 1)
+  if (rng() < (area === 1 ? 0.3 : 0.15)) {
     const cx = 4 + Math.floor(rng() * (ROOM_COLS - 8));
     const cy = 4 + Math.floor(rng() * (ROOM_ROWS - 8));
-    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
-      if (dx * dx + dy * dy <= 5 && cy + dy > 0 && cy + dy < ROOM_ROWS - 1 && cx + dx > 0 && cx + dx < ROOM_COLS - 1)
+    const size = 2 + Math.floor(rng() * 2);
+    for (let dy = -size; dy <= size; dy++) for (let dx = -size; dx <= size; dx++) {
+      if (dx * dx + dy * dy <= size * size + 1 && cy + dy > 1 && cy + dy < ROOM_ROWS - 2 && cx + dx > 1 && cx + dx < ROOM_COLS - 2)
         tiles[cy + dy][cx + dx] = 2;
     }
   }
@@ -536,22 +694,28 @@ function generateRoom(rx, ry, area, seed) {
     entities.push({ x: Math.floor(ROOM_COLS / 2) - 3, y: Math.floor(ROOM_ROWS / 2), type: "shrine", subtype: null, id: "shrine_home" });
     placeEnt("soul", null); placeEnt("soul", null);
   } else {
-    // Souls in most rooms
-    const soulCount = 1 + Math.floor(rng() * 3);
+    // Souls — more in safer rooms, fewer in dangerous ones
+    const soulCount = dist <= 1 ? 2 + Math.floor(rng() * 2) : 1 + Math.floor(rng() * 2);
     for (let i = 0; i < soulCount; i++) placeEnt("soul", null);
 
     // Demons based on area and distance from center
-    const dist = Math.abs(rx) + Math.abs(ry);
     if (area === 1) {
       const demonTypes = ["wrathful", "grieving", "deceitful", "forgotten"];
       if (dist >= 2) demonTypes.push("prideful", "hollow");
       if (dist >= 3) demonTypes.push("ancient");
       const demonCount = dist >= 3 ? 2 : 1;
       for (let i = 0; i < demonCount; i++) placeEnt("demon", demonTypes[Math.floor(rng() * demonTypes.length)]);
+    } else if (area === 2) {
+      const demonTypes = ["ashenwalker", "bound", "rootspeaker", "ashmother"];
+      if (dist >= 2) demonTypes.push("wrathful", "ancient");
+      const demonCount = dist >= 2 ? 2 : 1;
+      for (let i = 0; i < demonCount; i++) placeEnt("demon", demonTypes[Math.floor(rng() * demonTypes.length)]);
+      // Boss in distant room
+      if (rx === 0 && ry === -3) placeEnt("demon", "devourer");
     }
 
-    // Shrine in ~40% of rooms
-    if (rng() < 0.4) placeEnt("shrine", null);
+    // Shrine in ~35% of rooms
+    if (rng() < 0.35) placeEnt("shrine", null);
 
     // Gate in specific room
     if (area === 1 && rx === 2 && ry === 2) {
@@ -598,11 +762,24 @@ const DEMONS = {
   devourer: { name: "The Devourer", boss: true, lore: "Not evil. Starving. A hunger older than sin.",
     greetings: ["Finally. Substance.", "How long I have been empty.", "I cannot stop."],
     responses: { confront: [{ t: "The hunger is vast. But you have faced the vast before.", r: -20, ok: true }, { t: "Too large. It swallows conviction.", r: -25, ok: false }], comprehend: [{ t: "Not a monster. A wound. Something that should have healed.", r: -12, ok: true }, { t: "Measureless depth.", r: -18, ok: false }], absolve: [{ t: "'I forgive you for needing.' It weeps. Never been forgiven.", r: -8, ok: true }, { t: "How do you absolve hunger?", r: -12, ok: false }], endure: [{ t: "It feeds. You let it. You have more than it expects.", r: -28, ok: true }, { t: "Not infinite.", r: -30, ok: false }] } },
+  // ── Area 2 Demons ──
+  ashenwalker: { name: "Ashen Walker", boss: false, lore: "It walks the same path. Forever. The fire took everything but the walking.",
+    greetings: ["Step. Step. Step.", "The path is all.", "I remember burning."],
+    responses: { confront: [{ t: "You block the path. It walks through you.", r: -14, ok: false }, { t: "You walk beside it. Together for a time.", r: -10, ok: true }], comprehend: [{ t: "The fire. A village. Children singing before.", r: -8, ok: true }, { t: "Ash and ash and ash.", r: -12, ok: false }], absolve: [{ t: "The walking slows. 'Where am I going?'", r: -6, ok: true }, { t: "It cannot stop. Forgiveness slides past.", r: -10, ok: false }], endure: [{ t: "You match its pace. Mile after mile. It tires.", r: -16, ok: true }, { t: "It never tires. You do.", r: -20, ok: false }] } },
+  bound: { name: "The Bound One", boss: false, lore: "Chained not by others but by itself. The guilt is the lock.",
+    greetings: ["Don't look.", "I deserve this.", "These chains are mine."],
+    responses: { confront: [{ t: "The chains are rusted open. It holds them closed.", r: -10, ok: true }, { t: "It wraps tighter. Confront feeds guilt.", r: -16, ok: false }], comprehend: [{ t: "'I hurt someone. Long ago.' Understanding cracks a link.", r: -8, ok: true }, { t: "The guilt has become its skeleton. Remove it and nothing stands.", r: -14, ok: false }], absolve: [{ t: "A chain falls. Then another. 'Who gave you the right?' You. 'Oh.'", r: -5, ok: true }, { t: "It rejects mercy violently.", r: -12, ok: false }], endure: [{ t: "You sit beside the chains and wait. Eventually, it stops pulling.", r: -18, ok: true }, { t: "Guilt doesn't tire. You do.", r: -22, ok: false }] } },
+  rootspeaker: { name: "Root Speaker", boss: false, lore: "The roots remember what the trees forgot. Something fed them lies.",
+    greetings: ["The roots know.", "Listen to the ground.", "It speaks through me."],
+    responses: { confront: [{ t: "Roots don't fight. They grow around you.", r: -12, ok: false }, { t: "You tear through. Truth in the heartwood.", r: -14, ok: true }], comprehend: [{ t: "Not words — vibrations. You learn to feel them.", r: -6, ok: true }, { t: "The language is older than speech. You drown.", r: -16, ok: false }], absolve: [{ t: "The roots loosen their grip on old bones.", r: -4, ok: true }, { t: "They don't want mercy. They want to be heard.", r: -8, ok: false }], endure: [{ t: "The vibrations pass through you. You become a tuning fork.", r: -20, ok: true }, { t: "Patience doesn't work on something eternal.", r: -24, ok: false }] } },
+  ashmother: { name: "The Ash Mother", boss: false, lore: "She fed the fire to save them. They burned anyway. Now she feeds everything.",
+    greetings: ["Are you hungry?", "Let me carry that.", "Everyone leaves."],
+    responses: { confront: [{ t: "'You don't need to carry this.' She drops something heavy.", r: -8, ok: true }, { t: "She absorbs confrontation like fuel.", r: -14, ok: false }], comprehend: [{ t: "Love so large it crushed what it held. You see.", r: -6, ok: true }, { t: "The depth of it pulls you under.", r: -12, ok: false }], absolve: [{ t: "'You did enough.' She weeps ash. Lighter.", r: -3, ok: true }, { t: "She doesn't believe she deserves it.", r: -8, ok: false }], endure: [{ t: "You let her hold you. She needed to hold something alive.", r: -15, ok: true }, { t: "Mothering becomes consuming.", r: -20, ok: false }] } },
 };
 
-const WHISPERS = ["I forgot which home.", "Didn't mean to leave quietly.", "Birdsong was the last thing.", "Reaching for a hand.", "The book was good.", "Garden needs watering.", "Letter in the drawer.", "Promised I'd be there.", "Looking at the sky.", "Black cat, white ear.", "About to understand.", "Mid-sentence.", "Rain smells different.", "Church bells.", "Tea is warm."];
-const AMBIENT1 = ["Tall grass rustles.", "The meadow stretches.", "Something stirs.", "No sun. No moon.", "A silence that listens.", "Shadow between trees.", "Lighter grass here.", "Humming stops when you stop."];
-const AMBIENT2 = ["Ash drifts upward.", "Bone-white trees.", "No sound in ash.", "Something breathes below.", "The air tastes of endings.", "A branch cracks alone.", "Grey flakes like snow.", "Heavier silence."];
+const WHISPERS = ["I forgot which home.", "Didn't mean to leave quietly.", "Birdsong was the last thing.", "Reaching for a hand.", "The book was good.", "Garden needs watering.", "Letter in the drawer.", "Promised I'd be there.", "Looking at the sky.", "Black cat, white ear.", "About to understand.", "Mid-sentence.", "Rain smells different.", "Church bells.", "Tea is warm.", "I never said goodbye.", "The bread was rising.", "She was laughing.", "Almost morning.", "The dog kept waiting.", "I left the light on.", "Nobody checked the mail.", "It was my birthday.", "One more page.", "We were going to dance.", "The flowers bloomed late.", "I knew the way home.", "She held my hand.", "The window was open.", "I could hear the ocean."];
+const AMBIENT1 = ["Tall grass rustles.", "The meadow stretches.", "Something stirs.", "No sun. No moon.", "A silence that listens.", "Shadow between trees.", "Lighter grass here.", "Humming stops when you stop.", "Wind carries nothing.", "Grass bends toward you.", "A clearing ahead.", "The path forks invisible.", "Dewdrops on still leaves.", "Your footsteps are the only sound.", "Something watched. Then didn't."];
+const AMBIENT2 = ["Ash drifts upward.", "Bone-white trees.", "No sound in ash.", "Something breathes below.", "The air tastes of endings.", "A branch cracks alone.", "Grey flakes like snow.", "Heavier silence.", "The ground is warm.", "Roots pulse faintly.", "Ash swallows footprints.", "A whisper from underground.", "The trees lean inward.", "Something shifts beneath.", "The silence has weight here."];
 
 const KEEPER = [
   { c: s => s.t === 0, text: "You're awake. That's rare. Most souls wander. You woke up. That makes you a Searcher. Your grave is your anchor. Without it, you'd drift." },
@@ -653,10 +830,51 @@ export default function SoulSearcher() {
   const [visited, setVisited] = useState(new Set(["0,0"])); // Track explored rooms
   const [dmgFlash, setDmgFlash] = useState(0); // damage flash timer
   const [lastResolve, setLastResolve] = useState(100); // track resolve changes for flash
+  const [steps, setSteps] = useState(0); // total steps taken
+  const [deaths, setDeaths] = useState(0); // times resolve hit 0
 
   const choices = ["Confront", "Comprehend", "Absolve", "Endure"];
   const cDesc = ["Face it directly", "Seek to understand", "Offer mercy", "Stand firm"];
   const INTRO = ["You died.", "", "You don't remember how.", "", "But you woke up.", "", "Most souls don't wake up.", "They wander. They fade.", "", "You are different.", "", "You are a Searcher."];
+
+  // ── Save/Load ──────────────────────────────────────────────
+  const saveGame = useCallback(() => {
+    const state = {
+      gs, area, roomX, roomY, plX, plY, resolve, held, guided,
+      loreN, loreFrags: [...loreFrags], keeperT, potions, gateOpen,
+      banished: [...banished], visited: [...visited], steps, deaths,
+      tend, journal, bossTrophies, seed
+    };
+    try { localStorage.setItem("soul_searcher_save", JSON.stringify(state)); } catch(e) {}
+  }, [gs, area, roomX, roomY, plX, plY, resolve, held, guided, loreN, loreFrags, keeperT, potions, gateOpen, banished, visited, steps, deaths, tend, journal, bossTrophies, seed]);
+
+  const loadGame = useCallback(() => {
+    try {
+      const raw = localStorage.getItem("soul_searcher_save");
+      if (!raw) return false;
+      const s = JSON.parse(raw);
+      setGs(s.gs || "overworld"); setArea(s.area || 1);
+      setRoomX(s.roomX || 0); setRoomY(s.roomY || 0);
+      setRoom(generateRoom(s.roomX || 0, s.roomY || 0, s.area || 1, s.seed || 42));
+      setPlX(s.plX || 9); setPlY(s.plY || 10);
+      setResolve(s.resolve ?? 100); setHeld(s.held || 0); setGuided(s.guided || 0);
+      setLoreN(s.loreN || 0); setLoreFrags(s.loreFrags || []);
+      setKeeperT(s.keeperT || 0); setPotions(s.potions || 0);
+      setGateOpen(s.gateOpen || false);
+      setBanished(new Set(s.banished || []));
+      setVisited(new Set(s.visited || ["0,0"]));
+      setSteps(s.steps || 0); setDeaths(s.deaths || 0);
+      setTend(s.tend || { confront: 0, comprehend: 0, absolve: 0, endure: 0 });
+      setJournal(s.journal || []); setBossTrophies(s.bossTrophies || []);
+      setMsg("Your memory returns.");
+      return true;
+    } catch(e) { return false; }
+  }, []);
+
+  // Auto-save when entering home
+  useEffect(() => {
+    if (homeView) saveGame();
+  }, [homeView, saveGame]);
 
   // Trigger flash when resolve drops
   useEffect(() => {
@@ -667,6 +885,14 @@ export default function SoulSearcher() {
     }
     setLastResolve(resolve);
   }, [resolve, lastResolve]);
+
+  // Game over when resolve hits 0
+  useEffect(() => {
+    if (resolve <= 0 && gs !== "intro" && gs !== "gameover") {
+      setGs("gameover");
+      setDeaths(d => d + 1);
+    }
+  }, [resolve, gs]);
 
   const getW = useCallback(() => { const a = WHISPERS.filter((_, i) => !usedW.has(i)); if (!a.length) { setUsedW(new Set()); return pick(WHISPERS); } const idx = WHISPERS.indexOf(pick(a)); setUsedW(s => new Set([...s, idx])); return WHISPERS[idx]; }, [usedW]);
 
@@ -855,9 +1081,14 @@ export default function SoulSearcher() {
         ctx.globalAlpha = 1;
         // Draw small player sprite in white at bottom
         ctx.fillStyle = WHT;
-        ds(ctx, "player", W / 2 - 24, 630, 2);
-        ctx.font = "12px 'Courier New',monospace";
-        ctx.fillText("[ ENTER ]", W / 2, 700);
+        ds(ctx, "player", W / 2 - 24, 610, 2);
+        ctx.font = "bold 14px 'Courier New',monospace";
+        const hasSave = !!localStorage.getItem("soul_searcher_save");
+        ctx.fillText(hasSave ? "[ ENTER to continue ]" : "[ ENTER to begin ]", W / 2, 680);
+        if (hasSave) {
+          ctx.font = "italic 11px 'Courier New',monospace";
+          ctx.fillText("Your grave remembers.", W / 2, 704);
+        }
       }
       ctx.globalAlpha = 1; ctx.textBaseline = "alphabetic"; ctx.textAlign = "left"; return;
     }
@@ -897,24 +1128,29 @@ export default function SoulSearcher() {
       ctx.font = "14px 'Courier New',monospace"; ctx.textAlign = "left";
       ctx.fillText(`Souls Guided: ${guided}`, 50, 272);
       ctx.fillText(`Potions: ${potions}`, 250, 272);
-      ctx.fillText(`Area: ${area === 1 ? "Sacred Meadow" : "Ashen Forest"}`, 50, 297);
+      ctx.fillText(`Steps: ${steps}`, 50, 297);
+      ctx.fillText(`Deaths: ${deaths}`, 250, 297);
+      ctx.fillText(`Area: ${area === 1 ? "Sacred Meadow" : "Ashen Forest"}`, 50, 322);
+      ctx.font = "italic 11px 'Courier New',monospace"; ctx.fillStyle = GRAY;
+      ctx.fillText("Game saved.", W / 2, 340);
+      ctx.fillStyle = BLK;
 
       // Resolve ink blot
       ctx.textAlign = "center"; ctx.font = "bold 13px 'Courier New',monospace";
-      ctx.fillText("Resolve", W / 2, 325);
+      ctx.fillText("Resolve", W / 2, 358);
       const homeDamage = 100 - resolve;
-      drawInkBlot(ctx, W / 2, 370, homeDamage, 40);
+      drawInkBlot(ctx, W / 2, 400, homeDamage, 36);
       ctx.fillStyle = BLK;
 
       // Boss trophies
-      ctx.fillRect(40, 420, W - 80, 1);
+      ctx.fillRect(40, 448, W - 80, 1);
       ctx.font = "bold 14px 'Courier New',monospace"; ctx.textAlign = "center";
-      ctx.fillText("Boss Trophies", W / 2, 445);
-      if (!bossTrophies.length) { ctx.font = "italic 13px 'Courier New',monospace"; ctx.fillText("None yet.", W / 2, 475); }
-      else { bossTrophies.forEach((t, i) => { ds(ctx, t.sprite, W / 2 - bossTrophies.length * 30 + i * 60, 455, 2); }); }
+      ctx.fillText("Boss Trophies", W / 2, 470);
+      if (!bossTrophies.length) { ctx.font = "italic 13px 'Courier New',monospace"; ctx.fillText("None yet.", W / 2, 498); }
+      else { bossTrophies.forEach((t, i) => { ds(ctx, t.sprite, W / 2 - bossTrophies.length * 30 + i * 60, 480, 2); }); }
 
       // Lore
-      const ly = bossTrophies.length ? 505 : 495;
+      const ly = bossTrophies.length ? 530 : 518;
       if (loreFrags.length) {
         ctx.fillRect(40, ly, W - 80, 1);
         ctx.font = "bold 13px 'Courier New',monospace"; ctx.textAlign = "center";
@@ -1200,6 +1436,27 @@ export default function SoulSearcher() {
       ctx.textAlign = "left";
     }
 
+    // GAME OVER
+    if (gs === "gameover") {
+      ctx.fillStyle = BLK; ctx.fillRect(0, 0, W, H); ctx.fillStyle = WHT;
+      // Full-screen ink blot effect
+      ctx.fillStyle = WHT;
+      drawInkBlot(ctx, W / 2, H / 2, 100, 200);
+      ctx.fillStyle = WHT;
+      ctx.font = "bold 28px 'Courier New',monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText("Your resolve", W / 2, H / 2 - 60);
+      ctx.fillText("is spent.", W / 2, H / 2 - 25);
+      ctx.font = "italic 16px 'Courier New',monospace";
+      ctx.fillText("You drift. The darkness takes shape.", W / 2, H / 2 + 30);
+      ctx.fillText("But your grave remembers you.", W / 2, H / 2 + 55);
+      ctx.font = "14px 'Courier New',monospace";
+      ctx.fillText(`Souls guided: ${guided}  |  Steps: ${steps}`, W / 2, H / 2 + 110);
+      ctx.fillText(`Deaths: ${deaths}`, W / 2, H / 2 + 135);
+      ctx.font = "bold 16px 'Courier New',monospace";
+      ctx.fillText("[ ENTER to wake again ]", W / 2, H / 2 + 190);
+      ctx.textBaseline = "alphabetic"; ctx.textAlign = "left"; ctx.fillStyle = BLK;
+    }
+
     // JOURNAL
     if (jOpen) {
       ctx.fillStyle = WHT; ctx.fillRect(20, 20, W - 40, H - 40); ctx.fillStyle = BLK;
@@ -1234,6 +1491,26 @@ export default function SoulSearcher() {
       ctx.fillText("↑↓ Scroll   J or ESC to close", W / 2, H - 28); ctx.textAlign = "left";
     }
 
+    // ── Low resolve vignette ──
+    if (resolve < 40 && gs === "overworld") {
+      ctx.fillStyle = BLK;
+      const intensity = (40 - resolve) / 40; // 0..1
+      // Dither vignette from edges
+      const step = Math.max(2, Math.floor(8 - intensity * 6));
+      for (let y = 0; y < H; y += step) {
+        for (let x = 0; x < W; x += step) {
+          const dx = (x - W / 2) / (W / 2);
+          const dy = (y - H / 2) / (H / 2);
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const threshold = 1.2 - intensity * 0.6;
+          if (dist > threshold && Math.random() < (dist - threshold) * intensity * 2) {
+            ctx.fillRect(x, y, 1, 1);
+          }
+        }
+      }
+      ctx.fillStyle = BLK;
+    }
+
     // ── Damage flash overlay ──
     if (dmgFlash > 0 && gs !== "intro") {
       // Invert border flash effect
@@ -1245,7 +1522,7 @@ export default function SoulSearcher() {
       ctx.fillRect(W - thickness, 0, thickness, H);
       ctx.fillStyle = BLK;
     }
-  }, [gs, introLine, area, room, plX, plY, roomX, roomY, resolve, held, guided, msg, enc, encCh, encG, encR, journal, jOpen, jScroll, tend, banished, loreN, loreFrags, keeperMsg, bossTrophies, potions, homeView, gateOpen, visited, dmgFlash, ds, wrap, drawWater, drawGround, drawBorder, drawDivider, drawInkBlot]);
+  }, [gs, introLine, area, room, plX, plY, roomX, roomY, resolve, held, guided, msg, enc, encCh, encG, encR, journal, jOpen, jScroll, tend, banished, loreN, loreFrags, keeperMsg, bossTrophies, potions, homeView, gateOpen, visited, dmgFlash, steps, deaths, ds, wrap, drawWater, drawGround, drawBorder, drawDivider, drawInkBlot]);
 
   // ── Change room ──────────────────────────────────────────────
   const changeRoom = useCallback((newRX, newRY, entryX, entryY) => {
@@ -1269,13 +1546,47 @@ export default function SoulSearcher() {
     }
     if (jOpen) { if (e.key === "j" || e.key === "Escape") setJOpen(false); if (e.key === "ArrowDown") setJScroll(s => Math.min(s + 1, Math.max(0, journal.length - 6))); if (e.key === "ArrowUp") setJScroll(s => Math.max(0, s - 1)); return; }
 
-    if (gs === "intro") { if (e.key === "Enter") { if (introLine < INTRO.length - 1) setIntroLine(l => l + 1); else { setGs("overworld"); setMsg("You stand at your own grave. A figure watches nearby."); } } return; }
+    // Game over: respawn at grave with partial resolve
+    if (gs === "gameover") {
+      if (e.key === "Enter") {
+        setResolve(40); setHeld(0);
+        setRoomX(0); setRoomY(0);
+        setRoom(generateRoom(0, 0, area, seed));
+        setPlX(Math.floor(ROOM_COLS / 2) + 1); setPlY(Math.floor(ROOM_ROWS / 2) + 1);
+        setGs("overworld");
+        setMsg("You wake at your grave. Weaker. But awake.");
+        setEnc(null); setEncR(null); setEncCh(0);
+        setSavedRoom(null); setHomeView(false);
+      }
+      return;
+    }
+
+    if (gs === "intro") {
+      if (e.key === "Enter") {
+        if (introLine < INTRO.length - 1) setIntroLine(l => l + 1);
+        else {
+          // Try to load saved game
+          if (!loadGame()) {
+            setGs("overworld");
+            setMsg("You stand at your own grave. A figure watches nearby.");
+          }
+        }
+      }
+      return;
+    }
 
     if (gs === "encounter") {
       if (encR) { if (e.key === "Enter") { setEnc(null); setEncR(null); setEncCh(0); setGs("overworld"); } return; }
       if (e.key === "ArrowUp") setEncCh(c => (c - 1 + 4) % 4);
       if (e.key === "ArrowDown") setEncCh(c => (c + 1) % 4);
-      if (e.key === "Escape") { setEnc(null); setEncR(null); setEncCh(0); setGs("overworld"); setMsg("You step back."); }
+      if (e.key === "Escape") {
+        // Fleeing costs resolve — turning your back on truth has a price
+        const dem = DEMONS[enc.subtype];
+        const fleeCost = dem.boss ? -15 : -5;
+        setResolve(r => Math.max(0, r + fleeCost));
+        setEnc(null); setEncR(null); setEncCh(0); setGs("overworld");
+        setMsg(dem.boss ? "You flee. The hunger follows." : "You turn away. Something lingers.");
+      }
       if (e.key === "Enter" && enc) {
         const dem = DEMONS[enc.subtype], key = ["confront", "comprehend", "absolve", "endure"][encCh];
         const result = pick(dem.responses[key]);
@@ -1316,8 +1627,28 @@ export default function SoulSearcher() {
         const adj = room.entities.find(en => !banished.has(en.id) && Math.abs(en.x - plX) <= 1 && Math.abs(en.y - plY) <= 1 && !(en.x === plX && en.y === plY));
         if (adj) {
           if (adj.type === "demon") { setEnc(adj); setEncCh(0); setEncR(null); setEncG(pick(DEMONS[adj.subtype].greetings)); setGs("encounter"); }
-          else if (adj.type === "soul") { setMsg(`A soul whispers: "${getW()}"`); setHeld(s => s + 1); setBanished(b => new Set([...b, adj.id])); }
-          else if (adj.type === "shrine") { if (held > 0) { setGuided(g => g + held); setResolve(r => Math.min(100, r + held * 8)); setMsg(`${held} soul${held > 1 ? "s" : ""} guided to rest.`); setHeld(0); } else setMsg("The shrine hums. Bring souls."); }
+          else if (adj.type === "soul") {
+            const whisper = getW();
+            setMsg(`A soul whispers: "${whisper}"`);
+            setHeld(s => s + 1);
+            setBanished(b => new Set([...b, adj.id]));
+            // Small resolve boost from collecting souls — compassion sustains
+            setResolve(r => Math.min(100, r + 2));
+          }
+          else if (adj.type === "shrine") {
+            if (held > 0) {
+              const restored = held * 8;
+              setGuided(g => g + held);
+              setResolve(r => Math.min(100, r + restored));
+              const msgs = [
+                `${held} soul${held > 1 ? "s" : ""} guided to rest. Light returns.`,
+                `${held} soul${held > 1 ? "s" : ""} find${held === 1 ? "s" : ""} peace. You feel steadier.`,
+                `The shrine accepts ${held} soul${held > 1 ? "s" : ""}. Warmth.`,
+              ];
+              setMsg(pick(msgs));
+              setHeld(0);
+            } else setMsg(pick(["The shrine hums. Bring souls.", "Stone and silence. It waits.", "The shrine is patient."]));
+          }
           else if (adj.type === "keeper") { const state = { t: keeperT, l: loreN }; const line = [...KEEPER].reverse().find(l => l.c(state)); if (line) { setKeeperMsg(line.text); setKeeperT(t => t + 1); } }
           else if (adj.type === "gate") {
             if (!gateOpen) { setMsg("Sealed. Gather more truth."); return; }
@@ -1340,7 +1671,7 @@ export default function SoulSearcher() {
         if (tile === 0 || tile === undefined) {
           const blocked = room.entities.find(en => !banished.has(en.id) && en.x === nx && en.y === ny && en.type !== "keeper");
           if (!blocked) {
-            setPlX(nx); setPlY(ny);
+            setPlX(nx); setPlY(ny); setSteps(s => s + 1);
             const near = room.entities.find(en => !banished.has(en.id) && Math.abs(en.x - nx) <= 2 && Math.abs(en.y - ny) <= 2);
             if (near) {
               if (near.type === "demon") { const d = DEMONS[near.subtype]; setMsg(d.boss ? "Something massive. You feel its hunger." : `A ${d.name} stirs.`); }
@@ -1353,7 +1684,7 @@ export default function SoulSearcher() {
         else setMsg("Blocked.");
       }
     }
-  }, [gs, introLine, area, room, plX, plY, roomX, roomY, enc, encCh, encR, held, banished, journal, jOpen, keeperMsg, keeperT, loreN, loreFrags, homeView, savedRoom, gateOpen, potions, resolve, getW, encG, guided, seed, changeRoom]);
+  }, [gs, introLine, area, room, plX, plY, roomX, roomY, enc, encCh, encR, held, banished, journal, jOpen, keeperMsg, keeperT, loreN, loreFrags, homeView, savedRoom, gateOpen, potions, resolve, getW, encG, guided, seed, changeRoom, loadGame]);
 
   useEffect(() => { window.addEventListener("keydown", handleKey); return () => window.removeEventListener("keydown", handleKey); }, [handleKey]);
   useEffect(() => { render(); }, [render]);
