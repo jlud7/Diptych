@@ -8,7 +8,7 @@ const ROOM_OX = (W - ROOM_COLS * TILE) / 2; // Left margin
 const ROOM_OY = 52; // Below header
 const ROOM_H = ROOM_ROWS * TILE;
 const HUD_TOP = ROOM_OY + ROOM_H + 4;
-const BLK = "#000", WHT = "#f4f1e8", GRAY = "#999";
+const BLK = "#000", WHT = "#f4f1e8";
 const pick = a => a[Math.floor(Math.random() * a.length)];
 
 // ── 24x24 Sprites ──────────────────────────────────────────────
@@ -876,12 +876,10 @@ export default function SoulSearcher() {
     if (homeView) saveGame();
   }, [homeView, saveGame]);
 
-  // Trigger flash when resolve drops
+  // Trigger flash when resolve drops — single frame, no animation
   useEffect(() => {
     if (resolve < lastResolve) {
-      setDmgFlash(6);
-      const iv = setInterval(() => setDmgFlash(f => { if (f <= 1) { clearInterval(iv); return 0; } return f - 1; }), 60);
-      return () => clearInterval(iv);
+      setDmgFlash(1);
     }
     setLastResolve(resolve);
   }, [resolve, lastResolve]);
@@ -910,6 +908,30 @@ export default function SoulSearcher() {
     const w = t.split(" "); let l = [], c = "";
     for (const x of w) { const test = c ? c + " " + x : x; if (ctx.measureText(test).width > mw) { l.push(c); c = x; } else c = test; }
     if (c) l.push(c); return l;
+  }, []);
+
+  // ── Pixel-perfect circle (no anti-aliasing for e-ink) ──────
+  const fillCircle = useCallback((ctx, cx, cy, r) => {
+    const ri = Math.ceil(r);
+    for (let dy = -ri; dy <= ri; dy++) {
+      for (let dx = -ri; dx <= ri; dx++) {
+        if (dx * dx + dy * dy <= r * r) {
+          ctx.fillRect(Math.floor(cx + dx), Math.floor(cy + dy), 1, 1);
+        }
+      }
+    }
+  }, []);
+
+  // ── Pixel-perfect ellipse (no anti-aliasing for e-ink) ────
+  const fillEllipse = useCallback((ctx, cx, cy, rx, ry) => {
+    const rxi = Math.ceil(rx), ryi = Math.ceil(ry);
+    for (let dy = -ryi; dy <= ryi; dy++) {
+      for (let dx = -rxi; dx <= rxi; dx++) {
+        if ((dx * dx) / (rx * rx) + (dy * dy) / (ry * ry) <= 1) {
+          ctx.fillRect(Math.floor(cx + dx), Math.floor(cy + dy), 1, 1);
+        }
+      }
+    }
   }, []);
 
   // ── Draw water dither pattern ────────────────────────────────
@@ -956,6 +978,7 @@ export default function SoulSearcher() {
   // ── Draw ornamental border ──────────────────────────────────
   const drawBorder = useCallback((ctx, x, y, w, h) => {
     // Double-line border
+    ctx.strokeStyle = BLK;
     ctx.strokeRect(x, y, w, h);
     ctx.strokeRect(x + 3, y + 3, w - 6, h - 6);
     // Corner decorations
@@ -986,11 +1009,9 @@ export default function SoulSearcher() {
   // The blot is a small dot when healthy, expands asymmetrically as damage grows.
   const drawInkBlot = useCallback((ctx, cx, cy, damage, maxRadius) => {
     if (damage <= 0) {
-      // Tiny seed dot at full health
+      // Tiny seed dot at full health — pixel perfect
       ctx.fillStyle = BLK;
-      ctx.beginPath();
-      ctx.arc(cx, cy, 2, 0, Math.PI * 2);
-      ctx.fill();
+      fillCircle(ctx, cx, cy, 2);
       return;
     }
 
@@ -1005,12 +1026,12 @@ export default function SoulSearcher() {
 
     ctx.fillStyle = BLK;
 
-    // Draw multiple overlapping ellipses for organic ink-blot shape
+    // Draw multiple overlapping ellipses for organic ink-blot shape (pixel-perfect)
     const lobeCount = 12;
     for (let i = 0; i < lobeCount; i++) {
       const angle = (i / lobeCount) * Math.PI * 2 + prng(i + 1) * 0.5;
-      const stretch = 0.5 + prng(i + 10) * 1.0; // how far this lobe extends
-      const width = 0.4 + prng(i + 20) * 0.6; // width of this lobe
+      const stretch = 0.5 + prng(i + 10) * 1.0;
+      const width = 0.4 + prng(i + 20) * 0.6;
       const lobeR = baseR * stretch;
       const lobeW = baseR * width * 0.6;
 
@@ -1018,19 +1039,23 @@ export default function SoulSearcher() {
       const offX = (prng(i + 30) - 0.5) * baseR * 0.3;
       const offY = (prng(i + 40) - 0.5) * baseR * 0.2;
 
-      ctx.save();
-      ctx.translate(cx + offX, cy + offY);
-      ctx.rotate(angle);
-      ctx.beginPath();
-      ctx.ellipse(0, lobeR * 0.3, lobeW, lobeR, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+      // Rotated ellipse via pixel scan
+      const cosA = Math.cos(angle), sinA = Math.sin(angle);
+      const scanR = Math.ceil(Math.max(lobeR, lobeW) + Math.abs(lobeR * 0.3));
+      for (let dy = -scanR; dy <= scanR; dy++) {
+        for (let dx = -scanR; dx <= scanR; dx++) {
+          // Rotate back to ellipse space
+          const lx = dx * cosA + dy * sinA;
+          const ly = -dx * sinA + dy * cosA - lobeR * 0.3;
+          if (lobeW > 0 && lobeR > 0 && (lx * lx) / (lobeW * lobeW) + (ly * ly) / (lobeR * lobeR) <= 1) {
+            ctx.fillRect(Math.floor(cx + offX + dx), Math.floor(cy + offY + dy), 1, 1);
+          }
+        }
+      }
     }
 
     // Core blob to ensure solid center
-    ctx.beginPath();
-    ctx.arc(cx, cy, baseR * 0.55, 0, Math.PI * 2);
-    ctx.fill();
+    fillCircle(ctx, cx, cy, baseR * 0.55);
 
     // Satellite droplets that appear at higher damage
     if (t > 0.3) {
@@ -1041,9 +1066,7 @@ export default function SoulSearcher() {
         const r = 1 + prng(i + 120) * (t * 4);
         const dx = cx + Math.cos(angle) * dist;
         const dy = cy + Math.sin(angle) * dist;
-        ctx.beginPath();
-        ctx.arc(dx, dy, r, 0, Math.PI * 2);
-        ctx.fill();
+        fillCircle(ctx, dx, dy, r);
       }
     }
 
@@ -1060,7 +1083,7 @@ export default function SoulSearcher() {
         ctx.restore();
       }
     }
-  }, []);
+  }, [fillCircle]);
 
   // ── Render ─────────────────────────────────────────────────
   const render = useCallback(() => {
@@ -1072,13 +1095,19 @@ export default function SoulSearcher() {
     // INTRO
     if (gs === "intro") {
       ctx.fillStyle = BLK; ctx.fillRect(0, 0, W, H); ctx.fillStyle = WHT;
-      ctx.font = "bold 20px 'Courier New',monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      // Show only the current line and the one before it (no alpha — 1-bit)
       for (let i = 0; i <= introLine && i < INTRO.length; i++) {
-        ctx.globalAlpha = i === introLine ? 1 : (i === introLine - 1 ? 0.5 : 0.2);
-        ctx.fillText(INTRO[i], W / 2, 180 + i * 38);
+        if (i === introLine) {
+          ctx.font = "bold 20px 'Courier New',monospace";
+          ctx.fillText(INTRO[i], W / 2, 180 + i * 38);
+        } else if (i >= introLine - 2) {
+          // Older lines shown smaller to simulate fade
+          ctx.font = "14px 'Courier New',monospace";
+          ctx.fillText(INTRO[i], W / 2, 180 + i * 38);
+        }
       }
       if (introLine >= INTRO.length - 1) {
-        ctx.globalAlpha = 1;
         // Draw small player sprite in white at bottom
         ctx.fillStyle = WHT;
         ds(ctx, "player", W / 2 - 24, 610, 2);
@@ -1086,11 +1115,11 @@ export default function SoulSearcher() {
         const hasSave = !!localStorage.getItem("soul_searcher_save");
         ctx.fillText(hasSave ? "[ ENTER to continue ]" : "[ ENTER to begin ]", W / 2, 680);
         if (hasSave) {
-          ctx.font = "italic 11px 'Courier New',monospace";
+          ctx.font = "italic 12px 'Courier New',monospace";
           ctx.fillText("Your grave remembers.", W / 2, 704);
         }
       }
-      ctx.globalAlpha = 1; ctx.textBaseline = "alphabetic"; ctx.textAlign = "left"; return;
+      ctx.textBaseline = "alphabetic"; ctx.textAlign = "left"; return;
     }
 
     // HOME VIEW
@@ -1115,7 +1144,7 @@ export default function SoulSearcher() {
         if (i < loreN) {
           // Lit candle: flame + body
           ctx.fillRect(cx + 10, 218, 4, 14);
-          ctx.beginPath(); ctx.ellipse(cx + 12, 216, 5, 7, 0, 0, Math.PI * 2); ctx.fill();
+          fillEllipse(ctx, cx + 12, 216, 5, 7);
         } else {
           // Unlit: just body
           ctx.fillRect(cx + 10, 222, 4, 10);
@@ -1131,7 +1160,7 @@ export default function SoulSearcher() {
       ctx.fillText(`Steps: ${steps}`, 50, 297);
       ctx.fillText(`Deaths: ${deaths}`, 250, 297);
       ctx.fillText(`Area: ${area === 1 ? "Sacred Meadow" : "Ashen Forest"}`, 50, 322);
-      ctx.font = "italic 11px 'Courier New',monospace"; ctx.fillStyle = GRAY;
+      ctx.font = "italic 11px 'Courier New',monospace"; ctx.fillStyle = BLK;
       ctx.fillText("Game saved.", W / 2, 340);
       ctx.fillStyle = BLK;
 
@@ -1199,7 +1228,7 @@ export default function SoulSearcher() {
       drawGround(ctx, area);
 
       // Edge indicators (exits)
-      ctx.font = "10px 'Courier New',monospace"; ctx.textAlign = "center"; ctx.fillStyle = GRAY;
+      ctx.font = "12px 'Courier New',monospace"; ctx.textAlign = "center"; ctx.fillStyle = BLK;
       ctx.fillText("▲", W / 2, ROOM_OY - 8);
       ctx.fillText("▼", W / 2, ROOM_OY + ROOM_H + 14);
       ctx.fillStyle = BLK;
@@ -1296,7 +1325,7 @@ export default function SoulSearcher() {
       }
 
       // Minimap label
-      ctx.font = "10px 'Courier New',monospace"; ctx.textAlign = "center";
+      ctx.font = "12px 'Courier New',monospace"; ctx.textAlign = "center";
       ctx.fillText("MAP", MM_X + MM_W / 2, MM_Y + MM_W + 12);
 
       // ── Right: Status Panel ──
@@ -1316,9 +1345,9 @@ export default function SoulSearcher() {
       // Potions (dots)
       ctx.fillText("Potions:", SP_X, SP_Y + 52);
       for (let i = 0; i < Math.min(potions, 10); i++) {
-        ctx.beginPath(); ctx.arc(SP_X + 72 + i * 14, SP_Y + 48, 4, 0, Math.PI * 2); ctx.fill();
+        fillCircle(ctx, SP_X + 72 + i * 14, SP_Y + 48, 4);
       }
-      if (potions === 0) { ctx.font = "11px 'Courier New',monospace"; ctx.fillText("none", SP_X + 72, SP_Y + 52); }
+      if (potions === 0) { ctx.font = "12px 'Courier New',monospace"; ctx.fillText("none", SP_X + 72, SP_Y + 52); }
 
       // Candle lore indicator
       ctx.font = "12px 'Courier New',monospace";
@@ -1328,7 +1357,7 @@ export default function SoulSearcher() {
         if (i < loreN) {
           // Lit: flame + stem
           ctx.fillRect(clx + 2, cly + 5, 2, 7);
-          ctx.beginPath(); ctx.ellipse(clx + 3, cly + 4, 3, 4, 0, 0, Math.PI * 2); ctx.fill();
+          fillEllipse(ctx, clx + 3, cly + 4, 3, 4);
         } else {
           // Unlit: just stem
           ctx.fillRect(clx + 2, cly + 7, 2, 5);
@@ -1337,7 +1366,7 @@ export default function SoulSearcher() {
       }
 
       // Room coordinates (subtle)
-      ctx.font = "10px 'Courier New',monospace"; ctx.fillStyle = GRAY;
+      ctx.font = "12px 'Courier New',monospace"; ctx.fillStyle = BLK;
       ctx.fillText(`(${roomX}, ${roomY})`, SP_X + SP_W - 40, SP_Y + 74);
       ctx.fillStyle = BLK;
 
@@ -1358,8 +1387,8 @@ export default function SoulSearcher() {
 
       // ── Controls ──
       ctx.fillRect(0, H - 22, W, 1);
-      ctx.font = "11px 'Courier New',monospace"; ctx.textAlign = "center";
-      ctx.fillText("↑↓←→ Move   ENTER Act   J Journal   ESC Home", W / 2, H - 6);
+      ctx.font = "12px 'Courier New',monospace"; ctx.textAlign = "center";
+      ctx.fillText("D-Pad Move   Confirm Act   J Journal   Menu Home", W / 2, H - 6);
       ctx.textAlign = "left";
     }
 
@@ -1410,7 +1439,7 @@ export default function SoulSearcher() {
           }
           ctx.font = `bold 16px 'Courier New',monospace`;
           ctx.fillText(`${sel ? " >" : "  "} ${ch}`, 38, y + 18);
-          ctx.font = "11px 'Courier New',monospace";
+          ctx.font = "12px 'Courier New',monospace";
           ctx.fillText(`   ${cDesc[i]}`, 38, y + 33);
           ctx.fillStyle = BLK;
         });
@@ -1430,7 +1459,7 @@ export default function SoulSearcher() {
       drawInkBlot(ctx, W / 2, encBlotCY, encDamage, H / 3 * 0.4);
       ctx.fillStyle = BLK;
 
-      ctx.textAlign = "center"; ctx.font = "11px 'Courier New',monospace";
+      ctx.textAlign = "center"; ctx.font = "12px 'Courier New',monospace";
       ctx.fillRect(0, H - 22, W, 1);
       ctx.fillText("↑↓ Choose   ENTER Select   ESC Flee", W / 2, H - 6);
       ctx.textAlign = "left";
@@ -1487,42 +1516,48 @@ export default function SoulSearcher() {
         const p = tend[k] / maxT;
         ctx.fillText(`${(k[0].toUpperCase() + k.slice(1)).padEnd(12)} ${"█".repeat(Math.round(p * 20))}${"░".repeat(20 - Math.round(p * 20))}`, 40, tY + 32 + i * 18);
       });
-      ctx.textAlign = "center"; ctx.font = "11px 'Courier New',monospace";
+      ctx.textAlign = "center"; ctx.font = "12px 'Courier New',monospace";
       ctx.fillText("↑↓ Scroll   J or ESC to close", W / 2, H - 28); ctx.textAlign = "left";
     }
 
-    // ── Low resolve vignette ──
+    // ── Low resolve vignette (deterministic ordered dither) ──
     if (resolve < 40 && gs === "overworld") {
       ctx.fillStyle = BLK;
       const intensity = (40 - resolve) / 40; // 0..1
-      // Dither vignette from edges
-      const step = Math.max(2, Math.floor(8 - intensity * 6));
+      // Bayer 4x4 ordered dither matrix for deterministic pattern
+      const bayer = [0,8,2,10, 12,4,14,6, 3,11,1,9, 15,7,13,5];
+      const step = 4;
       for (let y = 0; y < H; y += step) {
         for (let x = 0; x < W; x += step) {
           const dx = (x - W / 2) / (W / 2);
           const dy = (y - H / 2) / (H / 2);
           const dist = Math.sqrt(dx * dx + dy * dy);
-          const threshold = 1.2 - intensity * 0.6;
-          if (dist > threshold && Math.random() < (dist - threshold) * intensity * 2) {
-            ctx.fillRect(x, y, 1, 1);
+          const threshold = 1.3 - intensity * 0.7;
+          if (dist > threshold) {
+            // Ordered dither: deterministic, same output every render
+            const ditherVal = bayer[((y >> 2) & 3) * 4 + ((x >> 2) & 3)] / 16;
+            const fillChance = Math.min(1, (dist - threshold) * intensity * 2);
+            if (ditherVal < fillChance) {
+              ctx.fillRect(x, y, step, step);
+            }
           }
         }
       }
       ctx.fillStyle = BLK;
     }
 
-    // ── Damage flash overlay ──
+    // ── Damage flash overlay (single frame, e-ink safe) ──
     if (dmgFlash > 0 && gs !== "intro") {
-      // Invert border flash effect
       ctx.fillStyle = BLK;
-      const thickness = Math.ceil(dmgFlash * 1.5);
-      ctx.fillRect(0, 0, W, thickness);
-      ctx.fillRect(0, H - thickness, W, thickness);
-      ctx.fillRect(0, 0, thickness, H);
-      ctx.fillRect(W - thickness, 0, thickness, H);
-      ctx.fillStyle = BLK;
+      const t = 6;
+      ctx.fillRect(0, 0, W, t);
+      ctx.fillRect(0, H - t, W, t);
+      ctx.fillRect(0, 0, t, H);
+      ctx.fillRect(W - t, 0, t, H);
+      // Clear flash so next render is clean
+      setDmgFlash(0);
     }
-  }, [gs, introLine, area, room, plX, plY, roomX, roomY, resolve, held, guided, msg, enc, encCh, encG, encR, journal, jOpen, jScroll, tend, banished, loreN, loreFrags, keeperMsg, bossTrophies, potions, homeView, gateOpen, visited, dmgFlash, steps, deaths, ds, wrap, drawWater, drawGround, drawBorder, drawDivider, drawInkBlot]);
+  }, [gs, introLine, area, room, plX, plY, roomX, roomY, resolve, held, guided, msg, enc, encCh, encG, encR, journal, jOpen, jScroll, tend, banished, loreN, loreFrags, keeperMsg, bossTrophies, potions, homeView, gateOpen, visited, dmgFlash, steps, deaths, ds, wrap, fillCircle, fillEllipse, drawWater, drawGround, drawBorder, drawDivider, drawInkBlot]);
 
   // ── Change room ──────────────────────────────────────────────
   const changeRoom = useCallback((newRX, newRY, entryX, entryY) => {
@@ -1688,7 +1723,7 @@ export default function SoulSearcher() {
 
   useEffect(() => { window.addEventListener("keydown", handleKey); return () => window.removeEventListener("keydown", handleKey); }, [handleKey]);
   useEffect(() => { render(); }, [render]);
-  useEffect(() => { if (gs === "intro") { const id = setInterval(render, 100); return () => clearInterval(id); } }, [gs, render]);
+  // No animation interval — e-ink renders only on state change via the render useEffect above
 
   return (
     <div tabIndex={0} autoFocus style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "#121212", fontFamily: "'Courier New',monospace", outline: "none" }}>
