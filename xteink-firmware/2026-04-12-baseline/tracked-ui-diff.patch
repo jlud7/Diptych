@@ -1,0 +1,114 @@
+diff --git a/src/activities/home/HomeActivity.cpp b/src/activities/home/HomeActivity.cpp
+index 810cb50..e493b7f 100644
+--- a/src/activities/home/HomeActivity.cpp
++++ b/src/activities/home/HomeActivity.cpp
+@@ -20,7 +20,7 @@
+ #include "fontIds.h"
+ 
+ int HomeActivity::getMenuItemCount() const {
+-  int count = 4;  // File Browser, Recents, File transfer, Settings
++  int count = 6;  // File Browser, Cover Grid, Recents, Games, File transfer, Settings
+   if (!recentBooks.empty()) {
+     count += recentBooks.size();
+   }
+@@ -189,8 +189,10 @@ void HomeActivity::loop() {
+     int idx = 0;
+     int menuSelectedIndex = selectorIndex - static_cast<int>(recentBooks.size());
+     const int fileBrowserIdx = idx++;
++    const int coverGridIdx = idx++;
+     const int recentsIdx = idx++;
+     const int opdsLibraryIdx = hasOpdsUrl ? idx++ : -1;
++    const int gamesIdx = idx++;
+     const int fileTransferIdx = idx++;
+     const int settingsIdx = idx;
+ 
+@@ -198,10 +200,14 @@ void HomeActivity::loop() {
+       onSelectBook(recentBooks[selectorIndex].path);
+     } else if (menuSelectedIndex == fileBrowserIdx) {
+       onFileBrowserOpen();
++    } else if (menuSelectedIndex == coverGridIdx) {
++      onCoverGridOpen();
+     } else if (menuSelectedIndex == recentsIdx) {
+       onRecentsOpen();
+     } else if (menuSelectedIndex == opdsLibraryIdx) {
+       onOpdsBrowserOpen();
++    } else if (menuSelectedIndex == gamesIdx) {
++      onGamesOpen();
+     } else if (menuSelectedIndex == fileTransferIdx) {
+       onFileTransferOpen();
+     } else if (menuSelectedIndex == settingsIdx) {
+@@ -225,14 +231,14 @@ void HomeActivity::render(RenderLock&&) {
+                           std::bind(&HomeActivity::storeCoverBuffer, this));
+ 
+   // Build menu items dynamically
+-  std::vector<const char*> menuItems = {tr(STR_BROWSE_FILES), tr(STR_MENU_RECENT_BOOKS), tr(STR_FILE_TRANSFER),
+-                                        tr(STR_SETTINGS_TITLE)};
+-  std::vector<UIIcon> menuIcons = {Folder, Recent, Transfer, Settings};
++  std::vector<const char*> menuItems = {tr(STR_BROWSE_FILES), "Cover Grid", tr(STR_MENU_RECENT_BOOKS),
++                                        "Games", tr(STR_FILE_TRANSFER), tr(STR_SETTINGS_TITLE)};
++  std::vector<UIIcon> menuIcons = {Folder, Book, Recent, Game, Transfer, Settings};
+ 
+   if (hasOpdsUrl) {
+-    // Insert OPDS Browser after File Browser
+-    menuItems.insert(menuItems.begin() + 2, tr(STR_OPDS_BROWSER));
+-    menuIcons.insert(menuIcons.begin() + 2, Library);
++    // Insert OPDS Browser after Recents (index 3), before Games
++    menuItems.insert(menuItems.begin() + 3, tr(STR_OPDS_BROWSER));
++    menuIcons.insert(menuIcons.begin() + 3, Library);
+   }
+ 
+   GUI.drawButtonMenu(
+@@ -268,4 +274,8 @@ void HomeActivity::onSettingsOpen() { activityManager.goToSettings(); }
+ 
+ void HomeActivity::onFileTransferOpen() { activityManager.goToFileTransfer(); }
+ 
++void HomeActivity::onCoverGridOpen() { activityManager.goToCoverGrid(); }
++
+ void HomeActivity::onOpdsBrowserOpen() { activityManager.goToBrowser(); }
++
++void HomeActivity::onGamesOpen() { activityManager.goToGamePicker(); }
+diff --git a/src/components/themes/BaseTheme.h b/src/components/themes/BaseTheme.h
+index 6878f55..4abbf73 100644
+--- a/src/components/themes/BaseTheme.h
++++ b/src/components/themes/BaseTheme.h
+@@ -64,7 +64,7 @@ struct ThemeMetrics {
+   bool keyboardCenteredText;
+ };
+ 
+-enum UIIcon { Folder, Text, Image, Book, File, Recent, Settings, Transfer, Library, Wifi, Hotspot };
++enum UIIcon { Folder, Text, Image, Book, File, Recent, Settings, Transfer, Library, Wifi, Hotspot, Game };
+ 
+ // Default theme implementation (Classic Theme)
+ // Additional themes can inherit from this and override methods as needed
+@@ -86,8 +86,8 @@ constexpr ThemeMetrics values = {.batteryWidth = 15,
+                                  .scrollBarWidth = 4,
+                                  .scrollBarRightOffset = 5,
+                                  .homeTopPadding = 40,
+-                                 .homeCoverHeight = 400,
+-                                 .homeCoverTileHeight = 400,
++                                 .homeCoverHeight = 350,
++                                 .homeCoverTileHeight = 350,
+                                  .homeRecentBooksCount = 1,
+                                  .buttonHintsHeight = 40,
+                                  .sideButtonHintsWidth = 30,
+diff --git a/src/components/themes/lyra/LyraTheme.cpp b/src/components/themes/lyra/LyraTheme.cpp
+index 58dabea..033fe56 100644
+--- a/src/components/themes/lyra/LyraTheme.cpp
++++ b/src/components/themes/lyra/LyraTheme.cpp
+@@ -18,6 +18,7 @@
+ #include "components/icons/file24.h"
+ #include "components/icons/folder.h"
+ #include "components/icons/folder24.h"
++#include "components/icons/game.h"
+ #include "components/icons/hotspot.h"
+ #include "components/icons/image24.h"
+ #include "components/icons/library.h"
+@@ -118,6 +119,8 @@ const uint8_t* iconForName(UIIcon icon, int size) {
+         return WifiIcon;
+       case UIIcon::Hotspot:
+         return HotspotIcon;
++      case UIIcon::Game:
++        return GameIcon;
+       default:
+         return nullptr;
+     }
