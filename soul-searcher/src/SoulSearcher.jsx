@@ -550,6 +550,119 @@ function getTutorialRoom(rx, ry) {
     }
   };
 
+  // (0, -4): The Sunken Shrine — Ch2 depth theme. Water frames a silent marker.
+  if (rx === 0 && ry === -4) {
+    const lTiles = Array.from({ length: GRID }, () => Array(GRID).fill(T.EMPTY));
+    const sTiles = Array.from({ length: GRID }, () => Array(GRID).fill(T.EMPTY));
+    const water = [
+      [3,3],[4,3],[5,3],[3,4],[3,5],
+      [9,3],[10,3],[11,3],[11,4],[11,5],
+      [3,9],[3,10],[3,11],[4,11],[5,11],
+      [9,11],[10,11],[11,11],[11,10],[11,9],
+    ];
+    water.forEach(([x,y]) => { lTiles[y][x] = T.WATER; sTiles[y][x] = T.WATER; });
+    return {
+      light: { tiles: lTiles,
+        entities: [
+          { id: "shrine_l", type: "sign", sprite: "headstone", x: 7, y: 7, blocking: true,
+            lines: [
+              "Here the depth becomes deeper.",
+              "The bottom is still above us.",
+              "Do not look down.",
+            ] },
+        ] },
+      shadow: { tiles: sTiles,
+        entities: [
+          { id: "shrine_s", type: "sign", sprite: "headstone", x: 7, y: 7, blocking: true,
+            lines: [
+              "The water does not ripple.",
+              "It has been listening for a long time.",
+            ] },
+        ] }
+    };
+  }
+
+  // (3, 4): The Two Wells — Ch2 depth theme. Paired water bodies, one plaque.
+  if (rx === 3 && ry === 4) {
+    const lTiles = Array.from({ length: GRID }, () => Array(GRID).fill(T.EMPTY));
+    const sTiles = Array.from({ length: GRID }, () => Array(GRID).fill(T.EMPTY));
+    const water = [
+      [3,5],[4,5],[3,6],[4,6],[3,7],[4,7],[3,8],[4,8],[3,9],[4,9],
+      [10,5],[11,5],[10,6],[11,6],[10,7],[11,7],[10,8],[11,8],[10,9],[11,9],
+    ];
+    water.forEach(([x,y]) => { lTiles[y][x] = T.WATER; sTiles[y][x] = T.WATER; });
+    return {
+      light: { tiles: lTiles,
+        entities: [
+          { id: "wells_l", type: "sign", sprite: "sign", x: 7, y: 7, blocking: true,
+            lines: [
+              "Two wells. One water.",
+              "Drop something in.",
+              "Another you will find it.",
+            ] },
+        ] },
+      shadow: { tiles: sTiles,
+        entities: [
+          { id: "wells_s", type: "sign", sprite: "sign", x: 7, y: 7, blocking: true,
+            lines: [
+              "The wells are older than the rift.",
+              "They were already listening when the panels parted.",
+            ] },
+        ] }
+    };
+  }
+
+  // (3, -3): The Still Pool — Ch3 mirror theme. A dormant eye that refuses to open.
+  if (rx === 3 && ry === -3) return {
+    light: {
+      tiles: parseRoom(emptyRoom()),
+      entities: [
+        { id: "pool_l", type: "sign", sprite: "mirror_tile", x: 7, y: 7, blocking: true,
+          lines: [
+            "The eye is resting.",
+            "Do not wake it.",
+            "It dreams of you walking backward.",
+          ] },
+      ]
+    },
+    shadow: {
+      tiles: parseRoom(emptyRoom()),
+      entities: [
+        { id: "pool_s", type: "sign", sprite: "mirror_tile", x: 7, y: 7, blocking: true,
+          lines: [
+            "Some mirrors are eyes that have closed.",
+            "Some have only blinked.",
+          ] },
+      ]
+    }
+  };
+
+  // (-3, -3): The Reflected Grave — Ch3 mirror theme. A headstone bearing your outline.
+  if (rx === -3 && ry === -3) return {
+    light: {
+      tiles: parseRoom(emptyRoom()),
+      entities: [
+        { id: "refl_l", type: "sign", sprite: "headstone", x: 7, y: 7, blocking: true,
+          lines: [
+            "Here lies you.",
+            "You have not yet died.",
+            "The grave is patient.",
+          ] },
+      ]
+    },
+    shadow: {
+      tiles: parseRoom(emptyRoom()),
+      entities: [
+        { id: "refl_s", type: "sign", sprite: "player", x: 7, y: 8, blocking: true,
+          lines: [
+            "Something is lying face-down.",
+            "It has your outline.",
+            "It is breathing. Almost.",
+          ] },
+      ]
+    }
+  };
+
   return null;
 }
 
@@ -728,17 +841,34 @@ function getChapter3Room(rx, ry) {
   return null;
 }
 
+// ── Seal outward edges for rooms on the world boundary ────────
+// The world is bounded at radius 4. Any room at the edge gets its
+// outward-facing edge filled with walls, so the boundary is visually
+// obvious (no fake doorway leading to nothing).
+function sealBoundaryEdges(room, rx, ry) {
+  if (!room) return room;
+  const seal = (tiles) => {
+    if (rx === -4) for (let y = 0; y < GRID; y++) tiles[y][0] = T.WALL;
+    if (rx === 4)  for (let y = 0; y < GRID; y++) tiles[y][GRID - 1] = T.WALL;
+    if (ry === -4) for (let x = 0; x < GRID; x++) tiles[0][x] = T.WALL;
+    if (ry === 4)  for (let x = 0; x < GRID; x++) tiles[GRID - 1][x] = T.WALL;
+  };
+  seal(room.light.tiles);
+  seal(room.shadow.tiles);
+  return room;
+}
+
 // ── Procedural generation ───────────────────────────────────────
 function generateDualRoom(rx, ry, seed, chapter) {
   const tutorial = getTutorialRoom(rx, ry);
-  if (tutorial) return tutorial;
+  if (tutorial) return sealBoundaryEdges(tutorial, rx, ry);
   if (chapter >= 2) {
     const ch2 = getChapter2Room(rx, ry);
-    if (ch2) return ch2;
+    if (ch2) return sealBoundaryEdges(ch2, rx, ry);
   }
   if (chapter >= 3) {
     const ch3 = getChapter3Room(rx, ry);
-    if (ch3) return ch3;
+    if (ch3) return sealBoundaryEdges(ch3, rx, ry);
   }
 
   const lrng = mulberry32(seed + rx * 7919 + ry * 6271);
@@ -808,7 +938,7 @@ function generateDualRoom(rx, ry, seed, chapter) {
     }
   }
 
-  return { light: { tiles: light, entities: [] }, shadow: { tiles: shadow, entities: [] } };
+  return sealBoundaryEdges({ light: { tiles: light, entities: [] }, shadow: { tiles: shadow, entities: [] } }, rx, ry);
 }
 
 // ── Dynamic dialogue ────────────────────────────────────────────
