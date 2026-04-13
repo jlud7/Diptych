@@ -870,29 +870,50 @@ export default function SoulSearcher() {
       ctx.fillStyle = BLK; ctx.fillRect(0, 0, W, H); ctx.fillStyle = WHT;
       ctx.textAlign = "center"; ctx.textBaseline = "middle";
       // Title
-      ctx.font = "bold 40px 'Courier New',monospace";
-      ctx.fillText("DIPTYCH", W / 2, 130);
+      ctx.font = "bold 44px 'Courier New',monospace";
+      ctx.fillText("DIPTYCH", W / 2, H / 2 - 140);
       // Dictionary-style definition — larger
-      ctx.font = "italic 16px 'Courier New',monospace";
-      ctx.fillText("/\u02C8diptik/  noun", W / 2, 180);
-      ctx.font = "15px 'Courier New',monospace";
-      ctx.fillText("An artwork made of two related panels", W / 2, 215);
-      ctx.fillText("that are meant to be viewed together", W / 2, 238);
-      ctx.fillText("as one piece.", W / 2, 261);
-      // Divider
-      ctx.fillRect(W / 2 - 40, 300, 80, 1);
-      // Controls
-      ctx.font = "bold 11px 'Courier New',monospace";
-      ctx.fillText("CONTROLS", W / 2, 325);
-      ctx.font = "12px 'Courier New',monospace";
-      ctx.fillText("\u2191 \u2193 \u2190 \u2192    walk in both worlds", W / 2, 355);
-      ctx.fillText("1           light walks alone", W / 2, 385);
-      ctx.fillText("2           shadow walks alone", W / 2, 415);
-      ctx.fillText("ENTER       speak, confirm", W / 2, 445);
+      ctx.font = "italic 18px 'Courier New',monospace";
+      ctx.fillText("/\u02C8diptik/  noun", W / 2, H / 2 - 80);
+      ctx.font = "16px 'Courier New',monospace";
+      ctx.fillText("An artwork made of two related panels", W / 2, H / 2 - 40);
+      ctx.fillText("that are meant to be viewed together", W / 2, H / 2 - 15);
+      ctx.fillText("as one piece.", W / 2, H / 2 + 10);
       // Player sprite + prompt
-      ds(ctx, "player", W / 2 - 12, 500);
+      ds(ctx, "player", W / 2 - 24, H / 2 + 80, 2);
       ctx.font = "14px 'Courier New',monospace";
-      ctx.fillText("[ ENTER to begin ]", W / 2, 580);
+      ctx.fillText("[ ENTER ]", W / 2, H / 2 + 180);
+      ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; return;
+    }
+
+    if (gs === "controls") {
+      ctx.fillStyle = BLK; ctx.fillRect(0, 0, W, H); ctx.fillStyle = WHT;
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.font = "bold 20px 'Courier New',monospace";
+      ctx.fillText("CONTROLS", W / 2, 110);
+      ctx.fillRect(W / 2 - 60, 135, 120, 2);
+      // Rows: key(s) column on left, label column on right
+      const rows = [
+        { key: "\u2191 \u2193 \u2190 \u2192", label: "walk in both worlds" },
+        { key: "1", label: "light walks alone" },
+        { key: "2", label: "shadow walks alone" },
+        { key: "ENTER", label: "speak, confirm" },
+        { key: "ESC", label: "end a walk" },
+      ];
+      ctx.font = "bold 17px 'Courier New',monospace";
+      const startY = 200, rowH = 56;
+      rows.forEach((r, i) => {
+        const y = startY + i * rowH;
+        ctx.textAlign = "right";
+        ctx.fillText(r.key, W / 2 - 20, y);
+        ctx.textAlign = "left";
+        ctx.font = "17px 'Courier New',monospace";
+        ctx.fillText(r.label, W / 2 + 20, y);
+        ctx.font = "bold 17px 'Courier New',monospace";
+      });
+      ctx.textAlign = "center";
+      ctx.font = "14px 'Courier New',monospace";
+      ctx.fillText("[ ENTER to begin ]", W / 2, H - 60);
       ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; return;
     }
 
@@ -1399,7 +1420,7 @@ export default function SoulSearcher() {
     }
 
     if (gs === "intro") {
-      if (key === "Enter") { setGs("play"); setMsg("Find the one who waits. She will know you are two."); }
+      if (key === "Enter") { setGs("controls"); }
       // DEV: press 0 to skip to Chapter 2, press 9 to skip to Chapter 3
       if (key === "0") {
         setShards(new Set(["shard_0","shard_1","shard_2","shard_3","shard_4"]));
@@ -1410,6 +1431,10 @@ export default function SoulSearcher() {
         setVoidShards(new Set(["void_0","void_1","void_2","void_3","void_4"]));
         setChapter(3); setGs("play"); setMsg("The hinge watches. Five reflections wait.");
       }
+      return;
+    }
+    if (gs === "controls") {
+      if (key === "Enter") { setGs("play"); setMsg("Find the one who waits. She will know you are two."); }
       return;
     }
     if (gs === "victory") {
