@@ -213,11 +213,11 @@ const VOID_PICKUP_LINES = [
 ];
 const TOTAL_ECHO_SHARDS = 5;
 const ECHO_SHARD_LOCS = [
-  { rx: 0, ry: -4, id: "echo_0" },
-  { rx: -4, ry: 0, id: "echo_1" },
-  { rx: 4, ry: 2, id: "echo_2" },
-  { rx: -3, ry: -3, id: "echo_3" },
-  { rx: 3, ry: -2, id: "echo_4" },
+  { rx: 0, ry: -2, id: "echo_0" },
+  { rx: -2, ry: 0, id: "echo_1" },
+  { rx: 2, ry: 2, id: "echo_2" },
+  { rx: -2, ry: 2, id: "echo_3" },
+  { rx: 2, ry: -2, id: "echo_4" },
 ];
 const ECHO_PICKUP_LINES = [
   "I. A voice speaks your line before you.",
@@ -485,12 +485,12 @@ function getChapter3Room(rx, ry) {
   // Each room has MIRROR tiles that the player must step on.
   // In mirror mode, shadow moves opposite to light — needed to push halves apart toward meeting point.
 
-  // Echo 0 (0,-4): "The Reflection" — MANDATORY mirror puzzle.
+  // Echo 0 (0,-2): "The Reflection" — MANDATORY mirror puzzle.
   // Both halves behind door cages. Light switch at (3,7), shadow switch at (11,7).
   // Combined mode: both at same pos, can only reach one switch.
   // Split mode: one snaps back, losing the switch.
   // Mirror mode from (7,7): press LEFT 4x → light(3,7) shadow(11,7). Both pressed!
-  if (rx === 0 && ry === -4) {
+  if (rx === 0 && ry === -2) {
     const lTiles = Array.from({ length: GRID }, () => Array(GRID).fill(T.EMPTY));
     lTiles[7][3] = T.SWITCH; lTiles[7][7] = T.MIRROR;
     // Light shard behind shadow-controlled door cage
@@ -512,9 +512,9 @@ function getChapter3Room(rx, ry) {
     };
   }
 
-  // Echo 1 (-4,0): "The Divide" — vertical mirror puzzle.
+  // Echo 1 (-2,0): "The Divide" — vertical mirror puzzle.
   // Mirror tile triggers inverse vertical movement. Push halves apart vertically.
-  if (rx === -4 && ry === 0) {
+  if (rx === -2 && ry === 0) {
     const lTiles = Array.from({ length: GRID }, () => Array(GRID).fill(T.EMPTY));
     lTiles[7][7] = T.MIRROR;
     [[7,3],[6,7],[8,7]].forEach(([x,y]) => { lTiles[y][x] = T.WALL; });
@@ -529,8 +529,8 @@ function getChapter3Room(rx, ry) {
     };
   }
 
-  // Echo 2 (4,2): "The Crossroads" — mirror + walls force diagonal-like convergence.
-  if (rx === 4 && ry === 2) {
+  // Echo 2 (2,2): "The Crossroads" — mirror + walls force diagonal-like convergence.
+  if (rx === 2 && ry === 2) {
     const lTiles = Array.from({ length: GRID }, () => Array(GRID).fill(T.EMPTY));
     lTiles[10][7] = T.MIRROR;
     [[3,7],[7,3],[6,10],[8,10]].forEach(([x,y]) => { lTiles[y][x] = T.WALL; });
@@ -545,8 +545,8 @@ function getChapter3Room(rx, ry) {
     };
   }
 
-  // Echo 3 (-3,-3): "The Paradox" — two mirror tiles creating a sequence.
-  if (rx === -3 && ry === -3) {
+  // Echo 3 (-2,2): "The Paradox" — two mirror tiles creating a sequence.
+  if (rx === -2 && ry === 2) {
     const lTiles = Array.from({ length: GRID }, () => Array(GRID).fill(T.EMPTY));
     lTiles[4][7] = T.MIRROR; lTiles[10][7] = T.MIRROR;
     [[3,4],[11,4],[7,2],[5,10],[9,10]].forEach(([x,y]) => { lTiles[y][x] = T.WALL; });
@@ -561,11 +561,10 @@ function getChapter3Room(rx, ry) {
     };
   }
 
-  // Echo 4 (3,-2): "The Final Mirror" — hardest. Mirror + doors + switches + push.
+  // Echo 4 (2,-2): "The Final Mirror" — hardest. Mirror + doors + switches + push.
   // Same dual-switch pattern but switches are farther (3 steps) and shards need L-push after freeing.
-  // Mirror at (7,10). Press UP 3x in mirror: light(7,7) shadow(7,13)→clamp. Adjust:
   // Mirror at (7,7). Switches at (4,7) light and (10,7) shadow. Press LEFT 3x.
-  if (rx === 3 && ry === -2) {
+  if (rx === 2 && ry === -2) {
     const lTiles = Array.from({ length: GRID }, () => Array(GRID).fill(T.EMPTY));
     lTiles[7][4] = T.SWITCH; lTiles[7][7] = T.MIRROR;
     // Light shard behind shadow-controlled doors + walls forming L-path
