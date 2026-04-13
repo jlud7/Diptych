@@ -1671,29 +1671,25 @@ export default function SoulSearcher() {
         } else {
           setMsg(lPush || sPush ? "" : "");
         }
-        // Latch detection: check if any switch is pressed after the move
-        // Use the post-move shard positions for accurate latching
-        const postLightEnts = lPush
-          ? lightWorld.entities.map(e => e === lPush ? { ...e, x: nlx + dx, y: nly + dy } : e)
-          : lightWorld.entities;
-        const postShadowEnts = shadowWorld.entities.map(e => {
-          if (e === sPush) return { ...e, x: nsx + mdx, y: nsy + mdy };
-          return e;
-        });
-        const lightCheck = { tiles: lightWorld.tiles, entities: postLightEnts };
-        const shadowCheck = { tiles: shadowWorld.tiles, entities: postShadowEnts };
-        const lPressedNow = isPlatePressed(lightCheck, { x: nlx, y: nly });
-        const sPressedNow = isPlatePressed(shadowCheck, { x: nsx, y: nsy });
+        // Latch detection: only linked-plate rooms latch.
+        // Non-linked rooms use live pressure only — doors close if weight is removed.
         if (linkedPlates) {
+          const postLightEnts = lPush
+            ? lightWorld.entities.map(e => e === lPush ? { ...e, x: nlx + dx, y: nly + dy } : e)
+            : lightWorld.entities;
+          const postShadowEnts = shadowWorld.entities.map(e => {
+            if (e === sPush) return { ...e, x: nsx + mdx, y: nsy + mdy };
+            return e;
+          });
+          const lightCheck = { tiles: lightWorld.tiles, entities: postLightEnts };
+          const shadowCheck = { tiles: shadowWorld.tiles, entities: postShadowEnts };
+          const lPressedNow = isPlatePressed(lightCheck, { x: nlx, y: nly });
+          const sPressedNow = isPlatePressed(shadowCheck, { x: nsx, y: nsy });
           // Linked: BOTH plates must be pressed on the same move to latch (requires mirror mode)
           if (lPressedNow && sPressedNow) {
             setSDoorsLatched(true);
             setLDoorsLatched(true);
           }
-        } else {
-          // Independent: each plate latches on its own
-          if (!sDoorsLatched && lPressedNow) setSDoorsLatched(true);
-          if (!lDoorsLatched && sPressedNow) setLDoorsLatched(true);
         }
 
         // Mirror mode: activate on mirror tile, tick down, snap back when spent
