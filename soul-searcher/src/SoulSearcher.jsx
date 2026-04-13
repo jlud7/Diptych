@@ -1151,7 +1151,17 @@ export default function SoulSearcher() {
         }
       }
     };
-    if (chapter >= 2) {
+    if (chapter >= 3) {
+      // Three groups side-by-side: Ch1 | Ch2 | Ch3
+      // Each diamond is 7px wide, spaced 14px apart → 5 diamonds span 14*4 + 7 = 63px.
+      const groupW = 14 * (TOTAL_SHARDS - 1) + 7;
+      const gap = 14;
+      const totalW = groupW * 3 + gap * 2;
+      const baseX = Math.floor(W / 2 - totalW / 2);
+      drawDiamondRow(TOTAL_SHARDS, "shard_", shards, baseX, 391);
+      drawDiamondRow(TOTAL_VOID_SHARDS, "void_", voidShards, baseX + groupW + gap, 391);
+      drawDiamondRow(TOTAL_ECHO_SHARDS, "echo_", echoShards, baseX + (groupW + gap) * 2, 391);
+    } else if (chapter >= 2) {
       // Show both rows: Ch1 shards left, Ch2 void shards right
       drawDiamondRow(TOTAL_SHARDS, "shard_", shards, W / 2 - TOTAL_SHARDS * 14 - 4, 391);
       drawDiamondRow(TOTAL_VOID_SHARDS, "void_", voidShards, W / 2 + 4, 391);
