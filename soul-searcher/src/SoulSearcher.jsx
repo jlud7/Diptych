@@ -2070,16 +2070,68 @@ export default function SoulSearcher() {
   useEffect(() => { window.addEventListener("keydown", handleKey); return () => window.removeEventListener("keydown", handleKey); }, [handleKey]);
   useEffect(() => { render(); }, [render]);
 
+  // Virtual input for touch/click controls — reuses the keyboard handler.
+  const triggerKey = useCallback((key) => {
+    handleKey({ key, preventDefault: () => {} });
+  }, [handleKey]);
+
+  // Shared button styling
+  const btnBase = {
+    background: "#2a2a2a",
+    color: "#c0c0c0",
+    border: "1px solid #444",
+    borderRadius: "8px",
+    fontFamily: "'Courier New',monospace",
+    fontWeight: "bold",
+    userSelect: "none",
+    WebkitUserSelect: "none",
+    WebkitTapHighlightColor: "transparent",
+    touchAction: "manipulation",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    outline: "none",
+    padding: 0,
+  };
+  const splitBtn = { ...btnBase, flex: 1, height: "40px", fontSize: "11px", letterSpacing: "1px" };
+  const dpadBtn = { ...btnBase, width: "48px", height: "48px", fontSize: "22px", lineHeight: 1 };
+  const actBtn = { ...btnBase, width: "72px", height: "72px", fontSize: "13px", letterSpacing: "1px", flexDirection: "column", gap: "2px" };
+  const dpadSpacer = { width: "48px", height: "48px" };
+
+  const press = (k) => (e) => { e.preventDefault(); triggerKey(k); };
+
   return (
-    <div tabIndex={0} autoFocus style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"#121212",fontFamily:"'Courier New',monospace",outline:"none" }}>
-      <div style={{ background:"#222",padding:"20px",borderRadius:"16px",boxShadow:"0 16px 48px rgba(0,0,0,0.8)",border:"1px solid #333" }}>
-        <canvas ref={cvs} width={W} height={H} style={{ width:W,height:H,borderRadius:"4px",imageRendering:"pixelated",border:"1px solid #444",background:WHT }} />
-        <div style={{ display:"flex",justifyContent:"center",gap:"6px",marginTop:"14px",flexWrap:"wrap" }}>
-          {["Split Light (1)","\u2191","\u2193","\u2190","\u2192","Split Shadow (2)","\u23CE Act"].map(l=>(
-            <div key={l} style={{ background:"#333",color:"#777",fontSize:"10px",padding:"6px 10px",borderRadius:"6px",border:"1px solid #444" }}>{l}</div>
-          ))}
+    <div tabIndex={0} autoFocus style={{ display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:"#121212",fontFamily:"'Courier New',monospace",outline:"none",padding:"12px",boxSizing:"border-box" }}>
+      <div style={{ background:"#222",padding:"14px",borderRadius:"16px",boxShadow:"0 16px 48px rgba(0,0,0,0.8)",border:"1px solid #333",width:"100%",maxWidth:`${W + 28}px`,boxSizing:"border-box" }}>
+        <canvas ref={cvs} width={W} height={H} style={{ width:"100%",height:"auto",aspectRatio:`${W} / ${H}`,display:"block",borderRadius:"4px",imageRendering:"pixelated",border:"1px solid #444",background:WHT }} />
+
+        {/* Split mode toggles */}
+        <div style={{ display:"flex",gap:"8px",marginTop:"14px" }}>
+          <button type="button" style={splitBtn} onClick={press("1")}>SPLIT LIGHT&nbsp;&middot;&nbsp;1</button>
+          <button type="button" style={splitBtn} onClick={press("2")}>SPLIT SHADOW&nbsp;&middot;&nbsp;2</button>
         </div>
-        <div style={{ fontSize:"9px",color:"#444",textAlign:"center",marginTop:"8px" }}>1 = Split Light &middot; 2 = Split Shadow &middot; ENTER = Interact</div>
+
+        {/* D-pad + Act */}
+        <div style={{ display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"12px",padding:"0 4px" }}>
+          <div style={{ display:"grid",gridTemplateColumns:"48px 48px 48px",gridTemplateRows:"48px 48px 48px",gap:"4px" }}>
+            <div style={dpadSpacer} />
+            <button type="button" style={dpadBtn} onClick={press("ArrowUp")} aria-label="Up">&#9650;</button>
+            <div style={dpadSpacer} />
+            <button type="button" style={dpadBtn} onClick={press("ArrowLeft")} aria-label="Left">&#9664;</button>
+            <div style={dpadSpacer} />
+            <button type="button" style={dpadBtn} onClick={press("ArrowRight")} aria-label="Right">&#9654;</button>
+            <div style={dpadSpacer} />
+            <button type="button" style={dpadBtn} onClick={press("ArrowDown")} aria-label="Down">&#9660;</button>
+            <div style={dpadSpacer} />
+          </div>
+          <button type="button" style={actBtn} onClick={press("Enter")} aria-label="Act">
+            <span style={{ fontSize:"20px",lineHeight:1 }}>&#9166;</span>
+            <span>ACT</span>
+          </button>
+        </div>
+
+        <div style={{ fontSize:"9px",color:"#555",textAlign:"center",marginTop:"10px",letterSpacing:"1px" }}>1 / 2 &middot; &#8593; &#8595; &#8592; &#8594; &middot; ENTER</div>
       </div>
     </div>
   );
