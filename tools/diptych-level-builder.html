@@ -15,7 +15,6 @@
         --accent: #7c9fff;
         --good: #8ce99a;
       }
-
       * { box-sizing: border-box; }
       body {
         margin: 0;
@@ -23,35 +22,29 @@
         background: var(--bg);
         color: var(--ink);
       }
-
       .app {
         display: grid;
-        grid-template-columns: 340px 1fr;
+        grid-template-columns: 380px 1fr;
         min-height: 100vh;
       }
-
       .sidebar {
         background: var(--panel);
         padding: 16px;
         border-right: 1px solid #2f3749;
         overflow-y: auto;
       }
-
       h1 {
         margin: 0 0 8px;
         font-size: 1.1rem;
       }
-
       p { color: var(--muted); margin: 0 0 12px; }
       h2 {
         margin: 18px 0 8px;
         font-size: 0.95rem;
         color: #dbe4ff;
       }
-
       .row { display: flex; gap: 8px; margin-bottom: 8px; }
       label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 5px; }
-
       input, select, textarea, button {
         width: 100%;
         background: var(--panel-2);
@@ -61,7 +54,6 @@
         padding: 8px 10px;
         font-size: 0.9rem;
       }
-
       button {
         cursor: pointer;
         transition: 120ms ease;
@@ -71,40 +63,33 @@
         background: #2f436b;
         border-color: #4a669f;
       }
-
       .palette {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 6px;
       }
-
       .palette button.active {
         border-color: var(--good);
         box-shadow: 0 0 0 1px var(--good) inset;
       }
-
       .main {
         padding: 16px;
       }
-
       .grids {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 18px;
       }
-
       .world {
         background: var(--panel);
         border: 1px solid #2f3749;
         border-radius: 12px;
         padding: 10px;
       }
-
       .world h3 {
         margin: 0 0 8px;
         font-size: 0.95rem;
       }
-
       .grid {
         display: grid;
         grid-template-columns: repeat(15, 24px);
@@ -115,7 +100,6 @@
         border-radius: 6px;
         overflow: hidden;
       }
-
       .cell {
         width: 24px;
         height: 24px;
@@ -126,8 +110,15 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        position: relative;
       }
-
+      .cell.selected::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border: 2px solid #d0ebff;
+        pointer-events: none;
+      }
       .tile-empty { background: #151821; }
       .tile-wall { background: #5d667c; }
       .tile-tree { background: #2f7a57; }
@@ -135,18 +126,44 @@
       .tile-door { background: #8f7a36; }
       .tile-switch { background: #6b4b8a; }
       .tile-mirror { background: #6d98c8; }
-
-      .entity-npc::after { content: "N"; color: #000; background: #fff; border-radius: 999px; width: 14px; height: 14px; display: grid; place-items: center; font-weight: 700; }
-      .entity-sign::after { content: "S"; color: #000; background: #ffe066; border-radius: 4px; width: 14px; height: 14px; display: grid; place-items: center; font-weight: 700; }
-      .entity-half-light::after { content: "L"; color: #000; background: #ffd43b; border-radius: 999px; width: 14px; height: 14px; display: grid; place-items: center; font-weight: 700; }
-      .entity-half-shadow::after { content: "D"; color: #fff; background: #495057; border-radius: 999px; width: 14px; height: 14px; display: grid; place-items: center; font-weight: 700; }
-      .entity-ghoul::after { content: "G"; color: #fff; background: #e03131; border-radius: 999px; width: 14px; height: 14px; display: grid; place-items: center; font-weight: 700; }
-
-      textarea { min-height: 170px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-
+      .entity-npc::after,
+      .entity-sign::after,
+      .entity-half-light::after,
+      .entity-half-shadow::after,
+      .entity-ghoul::after {
+        width: 14px;
+        height: 14px;
+        display: grid;
+        place-items: center;
+        font-weight: 700;
+      }
+      .entity-npc::after { content: "N"; color: #000; background: #fff; border-radius: 999px; }
+      .entity-sign::after { content: "S"; color: #000; background: #ffe066; border-radius: 4px; }
+      .entity-half-light::after { content: "L"; color: #000; background: #ffd43b; border-radius: 999px; }
+      .entity-half-shadow::after { content: "D"; color: #fff; background: #495057; border-radius: 999px; }
+      .entity-ghoul::after { content: "G"; color: #fff; background: #e03131; border-radius: 999px; }
+      textarea {
+        min-height: 140px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
       .hint { font-size: 0.8rem; color: var(--muted); margin-top: 6px; }
-
-      @media (max-width: 1100px) {
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+      .inspector {
+        padding: 10px;
+        border: 1px solid #36415a;
+        border-radius: 8px;
+        background: #1f2532;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 0.75rem;
+        color: #cfe1ff;
+        border: 1px solid #4b5d85;
+        border-radius: 999px;
+        padding: 2px 8px;
+        margin-bottom: 6px;
+      }
+      @media (max-width: 1200px) {
         .app { grid-template-columns: 1fr; }
         .grids { grid-template-columns: 1fr; }
       }
@@ -156,7 +173,10 @@
     <div class="app">
       <aside class="sidebar">
         <h1>Diptych Level Builder</h1>
-        <p>Build room layouts without touching game code. Export JSON, then generate C++ snippets when you're ready.</p>
+        <p>
+          Build room layouts without touching game code. Click a cell to inspect/configure advanced data (switch logic,
+          NPC dialogue + responses).
+        </p>
 
         <h2>Room Meta</h2>
         <div class="row">
@@ -203,6 +223,47 @@
           <button id="clearAllBtn">Clear both</button>
         </div>
 
+        <h2>Cell Inspector</h2>
+        <div class="inspector">
+          <div class="pill" id="inspectCoords">light (0, 0)</div>
+          <div class="hint" id="inspectSummary">Tile: empty · Entity: none</div>
+
+          <div id="switchConfigWrap" style="display:none; margin-top: 10px;">
+            <label for="switchMode">Switch behavior</label>
+            <select id="switchMode">
+              <option value="hold">Momentary (only while pressed/weighted)</option>
+              <option value="latched">One-time latched (permanently open)</option>
+            </select>
+            <div class="row" style="margin-top:8px;">
+              <div>
+                <label for="switchTargetWorld">Opens doors in</label>
+                <select id="switchTargetWorld">
+                  <option value="other">Other world (Diptych default)</option>
+                  <option value="same">Same world</option>
+                  <option value="light">Light world</option>
+                  <option value="shadow">Shadow world</option>
+                </select>
+              </div>
+            </div>
+            <label for="switchDoorTargets">Door targets (x,y per line)</label>
+            <textarea id="switchDoorTargets" placeholder="5,6&#10;6,6&#10;7,6"></textarea>
+            <p class="hint">If empty, treat as "all doors in target world". Coordinates outside 0..14 are ignored.</p>
+          </div>
+
+          <div id="npcConfigWrap" style="display:none; margin-top: 10px;">
+            <label for="npcId">NPC id (optional numeric)</label>
+            <input id="npcId" type="number" min="0" value="0" />
+            <label for="npcName" style="margin-top:8px;">NPC name/label (optional)</label>
+            <input id="npcName" type="text" placeholder="Watcher / Sage / Custom" />
+            <label for="npcDialogue" style="margin-top:8px;">Dialogue lines (one line per entry)</label>
+            <textarea id="npcDialogue" placeholder="You came far.&#10;The hinge remembers."></textarea>
+            <label for="npcResponses">Response options (format: Option => NPC reply)</label>
+            <textarea id="npcResponses" placeholder="Ask about shard => It sleeps in the west.&#10;Leave => Then go carefully."></textarea>
+          </div>
+
+          <p class="hint" id="inspectorHint" style="margin-top:8px;">Switch/NPC options appear when the selected cell contains those elements.</p>
+        </div>
+
         <h2>Export</h2>
         <div class="row">
           <button id="exportJsonBtn" class="primary">Export JSON</button>
@@ -214,7 +275,9 @@
         </div>
 
         <textarea id="output"></textarea>
-        <p class="hint">C++ output is designed for DiptychActivity helper methods (`addWalls`, `addDoors`, `addWater`, `addEntity`).</p>
+        <p class="hint">
+          Generated C++ includes room construction calls plus metadata comments for switch links and NPC branching dialogue.
+        </p>
       </aside>
 
       <main class="main">
@@ -243,6 +306,7 @@
         paintKind: "tile",
         selectedTile: "wall",
         selectedEntity: "npc",
+        selectedCell: { world: "light", x: 0, y: 0 },
         light: makeBlankWorld(),
         shadow: makeBlankWorld(),
         mouseDown: false,
@@ -252,6 +316,8 @@
         return {
           tiles: Array.from({ length: SIZE }, () => Array.from({ length: SIZE }, () => "empty")),
           entities: [],
+          switches: [],
+          npcDialogues: [],
         };
       }
 
@@ -273,10 +339,64 @@
         copyOutputBtn: document.getElementById("copyOutputBtn"),
         gridLight: document.getElementById("grid-light"),
         gridShadow: document.getElementById("grid-shadow"),
+        inspectCoords: document.getElementById("inspectCoords"),
+        inspectSummary: document.getElementById("inspectSummary"),
+        switchConfigWrap: document.getElementById("switchConfigWrap"),
+        switchMode: document.getElementById("switchMode"),
+        switchTargetWorld: document.getElementById("switchTargetWorld"),
+        switchDoorTargets: document.getElementById("switchDoorTargets"),
+        npcConfigWrap: document.getElementById("npcConfigWrap"),
+        npcId: document.getElementById("npcId"),
+        npcName: document.getElementById("npcName"),
+        npcDialogue: document.getElementById("npcDialogue"),
+        npcResponses: document.getElementById("npcResponses"),
       };
 
-      function selectedWorld() {
-        return state.worldSelect === "light" ? state.light : state.shadow;
+      function worldFromName(worldName) {
+        return worldName === "light" ? state.light : state.shadow;
+      }
+
+      function getEntityAt(world, x, y) {
+        return world.entities.find((e) => e.x === x && e.y === y) || null;
+      }
+
+      function getSwitchConfig(world, x, y) {
+        return world.switches.find((s) => s.x === x && s.y === y) || null;
+      }
+
+      function getNpcConfig(world, x, y) {
+        return world.npcDialogues.find((n) => n.x === x && n.y === y) || null;
+      }
+
+      function ensureSwitchConfig(world, x, y) {
+        let config = getSwitchConfig(world, x, y);
+        if (!config) {
+          config = { x, y, mode: "hold", targetWorld: "other", doorTargets: [] };
+          world.switches.push(config);
+        }
+        return config;
+      }
+
+      function removeSwitchConfig(world, x, y) {
+        world.switches = world.switches.filter((s) => !(s.x === x && s.y === y));
+      }
+
+      function ensureNpcConfig(world, x, y) {
+        let config = getNpcConfig(world, x, y);
+        if (!config) {
+          config = { x, y, id: 0, name: "", dialogue: [], responses: [] };
+          world.npcDialogues.push(config);
+        }
+        return config;
+      }
+
+      function removeNpcConfig(world, x, y) {
+        world.npcDialogues = world.npcDialogues.filter((n) => !(n.x === x && n.y === y));
+      }
+
+      function normalizeWorld(world) {
+        if (!Array.isArray(world.switches)) world.switches = [];
+        if (!Array.isArray(world.npcDialogues)) world.npcDialogues = [];
       }
 
       function upsertEntity(world, x, y, type) {
@@ -284,12 +404,31 @@
         if (type !== "none") {
           world.entities.push({ type, x, y, id: 0, blocking: false });
         }
+        if (type !== "npc") {
+          removeNpcConfig(world, x, y);
+        } else {
+          ensureNpcConfig(world, x, y);
+        }
+      }
+
+      function setTile(world, x, y, tile) {
+        world.tiles[y][x] = tile;
+        if (tile !== "switch") {
+          removeSwitchConfig(world, x, y);
+        } else {
+          ensureSwitchConfig(world, x, y);
+        }
+      }
+
+      function selectCell(worldName, x, y) {
+        state.selectedCell = { world: worldName, x, y };
       }
 
       function paint(worldName, x, y) {
-        const world = worldName === "light" ? state.light : state.shadow;
+        const world = worldFromName(worldName);
+        selectCell(worldName, x, y);
         if (state.paintKind === "tile") {
-          world.tiles[y][x] = state.selectedTile;
+          setTile(world, x, y, state.selectedTile);
         } else {
           upsertEntity(world, x, y, state.selectedEntity);
         }
@@ -315,16 +454,26 @@
             const cell = document.createElement("button");
             cell.type = "button";
             cell.className = `cell tile-${world.tiles[y][x]}`;
-            const ent = world.entities.find((e) => e.x === x && e.y === y);
-            if (ent) {
-              cell.classList.add(`entity-${ent.type}`);
+            if (state.selectedCell.world === worldName && state.selectedCell.x === x && state.selectedCell.y === y) {
+              cell.classList.add("selected");
             }
-            cell.addEventListener("mousedown", () => {
+            const ent = getEntityAt(world, x, y);
+            if (ent) cell.classList.add(`entity-${ent.type}`);
+            cell.addEventListener("mousedown", (evt) => {
               state.mouseDown = true;
+              if (evt.shiftKey) {
+                selectCell(worldName, x, y);
+                render();
+                return;
+              }
               paint(worldName, x, y);
             });
             cell.addEventListener("mouseenter", () => {
               if (state.mouseDown) paint(worldName, x, y);
+            });
+            cell.addEventListener("click", () => {
+              selectCell(worldName, x, y);
+              render();
             });
             root.appendChild(cell);
           }
@@ -341,9 +490,38 @@
         return points;
       }
 
+      function parseCoordinateLines(raw) {
+        return raw
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const [xRaw, yRaw] = line.split(",").map((v) => Number(v.trim()));
+            if (Number.isNaN(xRaw) || Number.isNaN(yRaw)) return null;
+            if (xRaw < 0 || xRaw >= SIZE || yRaw < 0 || yRaw >= SIZE) return null;
+            return { x: xRaw, y: yRaw };
+          })
+          .filter(Boolean);
+      }
+
+      function parseNpcResponses(raw) {
+        return raw
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const [optionText, responseText] = line.split("=>").map((v) => (v || "").trim());
+            return { option: optionText || "(option)", response: responseText || "" };
+          });
+      }
+
+      function escapeCpp(str) {
+        return String(str).replaceAll("\\", "\\\\").replaceAll('"', '\\"');
+      }
+
       function exportData() {
         return {
-          version: 1,
+          version: 2,
           roomX: Number(state.roomX),
           roomY: Number(state.roomY),
           light: state.light,
@@ -384,10 +562,35 @@
 
         world.entities.forEach((e) => {
           if (!enumMap[e.type]) return;
-          lines.push(
-            `addEntity(${worldName}, ${enumMap[e.type]}, ${e.x}, ${e.y}, ${e.id ?? 0}, ${Boolean(e.blocking)});`
-          );
+          const npcCfg = e.type === "npc" ? getNpcConfig(world, e.x, e.y) : null;
+          const npcId = npcCfg?.id ?? e.id ?? 0;
+          lines.push(`addEntity(${worldName}, ${enumMap[e.type]}, ${e.x}, ${e.y}, ${npcId}, ${Boolean(e.blocking)});`);
         });
+
+        if (world.switches.length) {
+          lines.push("", `// ${worldName} switch metadata (manual wiring)`);
+          world.switches.forEach((s) => {
+            const target = s.targetWorld;
+            const doorsText = s.doorTargets.length
+              ? s.doorTargets.map((d) => `(${d.x},${d.y})`).join(", ")
+              : "ALL_DOORS";
+            lines.push(
+              `// switch@(${s.x},${s.y}) mode=${s.mode} target=${target} doors=${doorsText}`
+            );
+          });
+        }
+
+        const npcsWithData = world.npcDialogues.filter((n) => n.dialogue.length || n.responses.length || n.name);
+        if (npcsWithData.length) {
+          lines.push("", `// ${worldName} NPC dialogue metadata (manual integration)`);
+          npcsWithData.forEach((npc) => {
+            lines.push(`// npc@(${npc.x},${npc.y}) id=${npc.id ?? 0} name=\"${escapeCpp(npc.name || "") }\"`);
+            npc.dialogue.forEach((line, idx) => lines.push(`//   line[${idx}] \"${escapeCpp(line)}\"`));
+            npc.responses.forEach((resp, idx) => {
+              lines.push(`//   option[${idx}] \"${escapeCpp(resp.option)}\" => \"${escapeCpp(resp.response)}\"`);
+            });
+          });
+        }
 
         if (lines.length === 1) lines.push("// (empty)");
         return lines;
@@ -397,6 +600,7 @@
         const data = exportData();
         const code = [
           `// Room (${data.roomX}, ${data.roomY})`,
+          "// NOTE: metadata comments below capture switch linkage and NPC branching dialogue.",
           `clearWorld(light);`,
           `clearWorld(shadow);`,
           ...worldToCpp("light", data.light),
@@ -409,7 +613,9 @@
       function importJson() {
         try {
           const data = JSON.parse(els.output.value);
-          if (!data || !data.light || !data.shadow) throw new Error("Not a valid Diptych builder JSON blob.");
+          if (!data || !data.light || !data.shadow) throw new Error("Not valid Diptych builder JSON.");
+          normalizeWorld(data.light);
+          normalizeWorld(data.shadow);
           state.roomX = Number(data.roomX || 0);
           state.roomY = Number(data.roomY || 0);
           state.light = data.light;
@@ -425,6 +631,37 @@
       function clearWorld(which) {
         if (which === "light") state.light = makeBlankWorld();
         if (which === "shadow") state.shadow = makeBlankWorld();
+      }
+
+      function renderInspector() {
+        const { world: worldName, x, y } = state.selectedCell;
+        const world = worldFromName(worldName);
+        const tile = world.tiles[y][x];
+        const entity = getEntityAt(world, x, y);
+
+        els.inspectCoords.textContent = `${worldName} (${x}, ${y})`;
+        els.inspectSummary.textContent = `Tile: ${tile} · Entity: ${entity?.type || "none"}`;
+
+        const hasSwitch = tile === "switch";
+        els.switchConfigWrap.style.display = hasSwitch ? "block" : "none";
+        if (hasSwitch) {
+          const cfg = ensureSwitchConfig(world, x, y);
+          els.switchMode.value = cfg.mode;
+          els.switchTargetWorld.value = cfg.targetWorld;
+          els.switchDoorTargets.value = cfg.doorTargets.map((d) => `${d.x},${d.y}`).join("\n");
+        }
+
+        const isNpc = entity?.type === "npc";
+        els.npcConfigWrap.style.display = isNpc ? "block" : "none";
+        if (isNpc) {
+          const cfg = ensureNpcConfig(world, x, y);
+          els.npcId.value = String(cfg.id || 0);
+          els.npcName.value = cfg.name || "";
+          els.npcDialogue.value = (cfg.dialogue || []).join("\n");
+          els.npcResponses.value = (cfg.responses || [])
+            .map((r) => `${r.option || ""} => ${r.response || ""}`)
+            .join("\n");
+        }
       }
 
       function render() {
@@ -453,6 +690,32 @@
 
         drawGrid(els.gridLight, "light", state.light);
         drawGrid(els.gridShadow, "shadow", state.shadow);
+        renderInspector();
+      }
+
+      function applySwitchInspectorChanges() {
+        const { world: worldName, x, y } = state.selectedCell;
+        const world = worldFromName(worldName);
+        if (world.tiles[y][x] !== "switch") return;
+        const cfg = ensureSwitchConfig(world, x, y);
+        cfg.mode = els.switchMode.value;
+        cfg.targetWorld = els.switchTargetWorld.value;
+        cfg.doorTargets = parseCoordinateLines(els.switchDoorTargets.value);
+      }
+
+      function applyNpcInspectorChanges() {
+        const { world: worldName, x, y } = state.selectedCell;
+        const world = worldFromName(worldName);
+        const ent = getEntityAt(world, x, y);
+        if (!ent || ent.type !== "npc") return;
+        const cfg = ensureNpcConfig(world, x, y);
+        cfg.id = Number(els.npcId.value) || 0;
+        cfg.name = els.npcName.value.trim();
+        cfg.dialogue = els.npcDialogue.value
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+        cfg.responses = parseNpcResponses(els.npcResponses.value);
       }
 
       els.roomX.addEventListener("change", () => (state.roomX = Number(els.roomX.value)));
@@ -480,7 +743,24 @@
         await navigator.clipboard.writeText(els.output.value);
       });
 
-      window.addEventListener("mouseup", () => (state.mouseDown = false));
+      els.switchMode.addEventListener("change", () => {
+        applySwitchInspectorChanges();
+        render();
+      });
+      els.switchTargetWorld.addEventListener("change", () => {
+        applySwitchInspectorChanges();
+        render();
+      });
+      els.switchDoorTargets.addEventListener("input", applySwitchInspectorChanges);
+
+      els.npcId.addEventListener("input", applyNpcInspectorChanges);
+      els.npcName.addEventListener("input", applyNpcInspectorChanges);
+      els.npcDialogue.addEventListener("input", applyNpcInspectorChanges);
+      els.npcResponses.addEventListener("input", applyNpcInspectorChanges);
+
+      window.addEventListener("mouseup", () => {
+        state.mouseDown = false;
+      });
 
       render();
       exportJson();
